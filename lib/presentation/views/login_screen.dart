@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_assignment/core/utils/validators.dart';
-import 'package:flutter_assignment/domain/entities/user.dart';
-import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/login_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,7 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _login() {
     if (_formKey.currentState!.validate()) {
       ref
-          .read(authViewModelProvider.notifier)
+          .read(loginViewModelProvider.notifier)
           .login(
             email: _emailController.text.trim(),
             password: _passwordController.text,
@@ -38,23 +37,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authViewModelProvider);
+    final loginState = ref.watch(loginViewModelProvider);
 
-    ref.listen<AsyncValue<User?>>(authViewModelProvider, (previous, next) {
-      next.when(
-        data: (user) {
-          if (user != null && previous?.value == null) {}
-        },
-        loading: () {},
-        error: (error, stack) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-              backgroundColor: Colors.red,
-            ),
-          );
-        },
-      );
+    ref.listen<LoginState>(loginViewModelProvider, (previous, next) {
+      if (next.error != null && previous?.error != next.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!), backgroundColor: Colors.red),
+        );
+      }
+
+      if (next.isSuccess && previous?.isSuccess != next.isSuccess) {}
     });
 
     return Scaffold(
@@ -93,7 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.validateEmail,
-                    enabled: !authState.isLoading,
+                    enabled: !loginState.isLoading,
                   ),
                   const SizedBox(height: 16),
 
@@ -123,16 +115,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       }
                       return null;
                     },
-                    enabled: !authState.isLoading,
+                    enabled: !loginState.isLoading,
                   ),
                   const SizedBox(height: 24),
 
                   ElevatedButton(
-                    onPressed: authState.isLoading ? null : _login,
+                    onPressed: loginState.isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: authState.isLoading
+                    child: loginState.isLoading
                         ? const SizedBox(
                             height: 20,
                             width: 20,
@@ -147,7 +139,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     children: [
                       const Text('계정이 없으신가요?'),
                       TextButton(
-                        onPressed: authState.isLoading
+                        onPressed: loginState.isLoading
                             ? null
                             : () => context.go('/signup'),
                         child: const Text('회원가입'),

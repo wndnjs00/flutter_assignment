@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_assignment/core/utils/validators.dart';
-import 'package:flutter_assignment/domain/entities/user.dart';
-import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/signup_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,11 +29,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     super.dispose();
   }
 
-  void _signup() {
+  void _signup() async {
     if (_formKey.currentState!.validate()) {
       ref
-          .read(authViewModelProvider.notifier)
-          .signUp(
+          .read(signupViewModelProvider.notifier)
+          .signup(
             email: _emailController.text.trim(),
             name: _nameController.text.trim(),
             password: _passwordController.text,
@@ -45,30 +44,25 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authViewModelProvider);
+    final signupState = ref.watch(signupViewModelProvider);
 
-    ref.listen<AsyncValue<User?>>(authViewModelProvider, (previous, next) {
-      next.when(
-        data: (user) {
-          if (user != null && previous?.value == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('회원가입이 완료되었습니다'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
-        },
-        loading: () {},
-        error: (error, stack) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-              backgroundColor: Colors.red,
-            ),
-          );
-        },
-      );
+    ref.listen<SignupState>(signupViewModelProvider, (previous, next) {
+      if (next.error != null && previous?.error != next.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!), backgroundColor: Colors.red),
+        );
+      }
+
+      if (next.isSuccess && previous?.isSuccess != next.isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('회원가입이 완료되었습니다'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        context.go('/login');
+      }
     });
 
     return Scaffold(
@@ -93,7 +87,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: Validators.validateEmail,
-                  enabled: !authState.isLoading,
+                  enabled: !signupState.isLoading,
                 ),
                 const SizedBox(height: 16),
 
@@ -106,7 +100,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     border: OutlineInputBorder(),
                   ),
                   validator: Validators.validateName,
-                  enabled: !authState.isLoading,
+                  enabled: !signupState.isLoading,
                 ),
                 const SizedBox(height: 16),
 
@@ -132,7 +126,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   obscureText: _obscurePassword,
                   validator: Validators.validatePassword,
-                  enabled: !authState.isLoading,
+                  enabled: !signupState.isLoading,
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -165,16 +159,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     value,
                     _passwordController.text,
                   ),
-                  enabled: !authState.isLoading,
+                  enabled: !signupState.isLoading,
                 ),
                 const SizedBox(height: 32),
 
                 ElevatedButton(
-                  onPressed: authState.isLoading ? null : _signup,
+                  onPressed: signupState.isLoading ? null : _signup,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: authState.isLoading
+                  child: signupState.isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
@@ -189,7 +183,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   children: [
                     const Text('이미 계정이 있으신가요?'),
                     TextButton(
-                      onPressed: authState.isLoading
+                      onPressed: signupState.isLoading
                           ? null
                           : () => context.go('/login'),
                       child: const Text('로그인'),

@@ -27,17 +27,9 @@ class AuthRepositoryImpl implements AuthRepository {
       confirmPassword: confirmPassword,
     );
 
-    final response = await _remoteDataSource.signup(request);
+    await _remoteDataSource.signup(request);
 
-    await _saveTokens(response.accessToken, response.refreshToken);
-    await _saveUserInfo(email, name);
-
-    return User(
-      email: email,
-      name: name,
-      accessToken: response.accessToken,
-      refreshToken: response.refreshToken,
-    );
+    return User(email: email, name: name);
   }
 
   @override

@@ -15,10 +15,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authState = ref.watch(authViewModelProvider);
 
-      final isAuthenticated = authState.maybeWhen(
-        data: (user) => user != null,
-        orElse: () => false,
-      );
+      final isAuthenticated = authState.isAuthenticated;
 
       final isLoggingIn =
           state.matchedLocation == '/login' ||

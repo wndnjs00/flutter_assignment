@@ -9,13 +9,9 @@ import 'package:flutter_assignment/data/models/auth/signup_request.dart';
 class AuthRemoteDataSource {
   final Dio _dio = DioClient.instanceWithoutAuth;
 
-  Future<AuthResponse> signup(SignupRequest request) async {
+  Future<void> signup(SignupRequest request) async {
     try {
-      final response = await _dio.post(
-        ApiConstants.signup,
-        data: request.toJson(),
-      );
-      return AuthResponse.fromJson(response.data);
+      await _dio.post(ApiConstants.signup, data: request.toJson());
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -27,7 +23,11 @@ class AuthRemoteDataSource {
         ApiConstants.signin,
         data: request.toJson(),
       );
-      return AuthResponse.fromJson(response.data);
+      if (response.data is Map<String, dynamic>) {
+        return AuthResponse.fromJson(response.data);
+      } else {
+        throw '서버 응답 형식이 올바르지 않습니다';
+      }
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -39,16 +39,30 @@ class AuthRemoteDataSource {
         ApiConstants.refresh,
         data: request.toJson(),
       );
-      return AuthResponse.fromJson(response.data);
+      if (response.data is Map<String, dynamic>) {
+        return AuthResponse.fromJson(response.data);
+      } else {
+        throw '서버 응답 형식이 올바르지 않습니다';
+      }
     } on DioException catch (e) {
       throw _handleError(e);
     }
   }
 
   String _handleError(DioException error) {
-    if (error.response != null) {
-      final message = error.response?.data['message'];
-      return message ?? '오류가 발생했습니다';
+    final data = error.response?.data;
+
+    if (data is Map<String, dynamic>) {
+      final firstKey = data.keys.first;
+      final value = data[firstKey];
+
+      if (value is List && value.isNotEmpty) {
+        return value.first.toString();
+      }
+
+      if (value is String) {
+        return value;
+      }
     }
 
     if (error.type == DioExceptionType.connectionTimeout ||
