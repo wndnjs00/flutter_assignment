@@ -22,6 +22,7 @@ dependencies:
   logger: ^2.0.2+1
   image_picker: ^1.0.7
   intl: ^0.18.1
+  jwt_decoder: ^2.0.1
 
 
 dev_dependencies:
@@ -31,7 +32,6 @@ dev_dependencies:
   riverpod_generator: ^2.3.9
   freezed: ^2.4.6
   json_serializable: ^6.7.1
-  retrofit_generator: ^8.0.6
   flutter_lints: ^5.0.0
 
 flutter:

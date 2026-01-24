@@ -1,3 +1,4 @@
+import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/views/board_detail_screen.dart';
 import 'package:flutter_assignment/presentation/views/board_form_screen.dart';
 import 'package:flutter_assignment/presentation/views/board_list_screen.dart';
@@ -9,10 +10,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-
   return GoRouter(
     initialLocation: '/login',
-    redirect: (context, state) {},
+    redirect: (context, state) {
+      final authState = ref.watch(authViewModelProvider);
+
+      final isAuthenticated = authState.maybeWhen(
+        data: (user) => user != null,
+        orElse: () => false,
+      );
+
+      final isLoggingIn =
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/signup';
+
+      if (!isAuthenticated && !isLoggingIn) {
+        return '/login';
+      }
+
+      if (isAuthenticated && isLoggingIn) {
+        return '/';
+      }
+      return null;
+    },
     routes: [
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
