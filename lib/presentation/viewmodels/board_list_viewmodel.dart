@@ -3,41 +3,20 @@ import 'package:flutter_assignment/domain/entities/board/pagination.dart';
 import 'package:flutter_assignment/domain/repositories/board_repository.dart';
 import 'package:flutter_assignment/presentation/providers/board_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class BoardListState {
-  final List<BoardListItem> boards;
-  final Pagination? pagination;
-  final bool isLoading;
-  final bool isLoadingMore;
-  final String? error;
-  final Map<String, String> categories;
+part 'board_list_viewmodel.freezed.dart';
 
-  BoardListState({
-    this.boards = const [],
-    this.pagination,
-    this.isLoading = false,
-    this.isLoadingMore = false,
-    this.error,
-    this.categories = const {},
-  });
-
-  BoardListState copyWith({
-    List<BoardListItem>? boards,
+@freezed
+class BoardListState with _$BoardListState {
+  const factory BoardListState({
+    @Default([]) List<BoardListItem> boards,
     Pagination? pagination,
-    bool? isLoading,
-    bool? isLoadingMore,
+    @Default(false) bool isLoading,
+    @Default(false) bool isLoadingMore,
     String? error,
-    Map<String, String>? categories,
-  }) {
-    return BoardListState(
-      boards: boards ?? this.boards,
-      pagination: pagination ?? this.pagination,
-      isLoading: isLoading ?? this.isLoading,
-      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      error: error,
-      categories: categories ?? this.categories,
-    );
-  }
+    @Default({}) Map<String, String> categories,
+  }) = _BoardListState;
 }
 
 class BoardListViewModel extends StateNotifier<BoardListState> {

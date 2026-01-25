@@ -3,25 +3,17 @@ import 'dart:io';
 import 'package:flutter_assignment/domain/repositories/board_repository.dart';
 import 'package:flutter_assignment/presentation/providers/board_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class BoardFormState {
-  final bool isLoading;
-  final String? error;
-  final String? successMessage;
+part 'board_form_viewmodel.freezed.dart';
 
-  BoardFormState({this.isLoading = false, this.error, this.successMessage});
-
-  BoardFormState copyWith({
-    bool? isLoading,
+@freezed
+class BoardFormState with _$BoardFormState {
+  const factory BoardFormState({
+    @Default(false) bool isLoading,
     String? error,
     String? successMessage,
-  }) {
-    return BoardFormState(
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
-      successMessage: successMessage,
-    );
-  }
+  }) = _BoardFormState;
 }
 
 class BoardFormViewModel extends StateNotifier<BoardFormState> {

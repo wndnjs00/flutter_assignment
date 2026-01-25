@@ -1,9 +1,13 @@
 import 'package:flutter_assignment/domain/entities/board/board_list_item.dart';
 import 'package:flutter_assignment/domain/entities/board/pagination.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class BoardListPagination {
-  final List<BoardListItem> items;
-  final Pagination pagination;
+part 'board_list_pagination.freezed.dart';
 
-  BoardListPagination({required this.items, required this.pagination});
+@freezed
+class BoardListPagination with _$BoardListPagination {
+  const factory BoardListPagination({
+    required List<BoardListItem> items,
+    required Pagination pagination,
+  }) = _BoardListPagination;
 }

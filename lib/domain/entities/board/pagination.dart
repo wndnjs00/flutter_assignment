@@ -1,17 +1,14 @@
-class Pagination {
-  final int currentPage;
-  final int totalPages;
-  final int totalElements;
-  final int pageSize;
-  final bool isFirst;
-  final bool isLast;
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'pagination.freezed.dart';
 
-  Pagination({
-    required this.currentPage,
-    required this.totalPages,
-    required this.totalElements,
-    required this.pageSize,
-    required this.isFirst,
-    required this.isLast,
-  });
+@freezed
+class Pagination with _$Pagination {
+  const factory Pagination({
+    required int currentPage,
+    required int totalPages,
+    required int totalElements,
+    required int pageSize,
+    required bool isFirst,
+    required bool isLast,
+  }) = _Pagination;
 }

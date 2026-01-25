@@ -6,13 +6,14 @@ part of 'board_create_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BoardCreateResponse _$BoardCreateResponseFromJson(Map<String, dynamic> json) =>
-    BoardCreateResponse(
+_$BoardCreateResponseImpl _$$BoardCreateResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$BoardCreateResponseImpl(
       id: (json['id'] as num).toInt(),
     );
 
-Map<String, dynamic> _$BoardCreateResponseToJson(
-        BoardCreateResponse instance) =>
+Map<String, dynamic> _$$BoardCreateResponseImplToJson(
+        _$BoardCreateResponseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
     };

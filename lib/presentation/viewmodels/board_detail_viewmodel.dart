@@ -2,21 +2,17 @@ import 'package:flutter_assignment/domain/entities/board/board.dart';
 import 'package:flutter_assignment/domain/repositories/board_repository.dart';
 import 'package:flutter_assignment/presentation/providers/board_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class BoardDetailState {
-  final Board? board;
-  final bool isLoading;
-  final String? error;
+part 'board_detail_viewmodel.freezed.dart';
 
-  BoardDetailState({this.board, this.isLoading = false, this.error});
-
-  BoardDetailState copyWith({Board? board, bool? isLoading, String? error}) {
-    return BoardDetailState(
-      board: board ?? this.board,
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
-    );
-  }
+@freezed
+class BoardDetailState with _$BoardDetailState {
+  const factory BoardDetailState({
+    Board? board,
+    @Default(false) bool isLoading,
+    String? error,
+  }) = _BoardDetailState;
 }
 
 class BoardDetailViewModel extends StateNotifier<BoardDetailState> {

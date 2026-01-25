@@ -6,8 +6,9 @@ part of 'board_list_item_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BoardDetailResponse _$BoardDetailResponseFromJson(Map<String, dynamic> json) =>
-    BoardDetailResponse(
+_$BoardDetailResponseImpl _$$BoardDetailResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$BoardDetailResponseImpl(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       content: json['content'] as String,
@@ -16,8 +17,8 @@ BoardDetailResponse _$BoardDetailResponseFromJson(Map<String, dynamic> json) =>
       createdAt: json['createdAt'] as String,
     );
 
-Map<String, dynamic> _$BoardDetailResponseToJson(
-        BoardDetailResponse instance) =>
+Map<String, dynamic> _$$BoardDetailResponseImplToJson(
+        _$BoardDetailResponseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
@@ -27,26 +28,26 @@ Map<String, dynamic> _$BoardDetailResponseToJson(
       'createdAt': instance.createdAt,
     };
 
-BoardListItemResponse _$BoardListItemResponseFromJson(
+_$BoardListItemResponseImpl _$$BoardListItemResponseImplFromJson(
         Map<String, dynamic> json) =>
-    BoardListItemResponse(
+    _$BoardListItemResponseImpl(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       category: json['category'] as String,
-      createdAt:
-          BoardListItemResponse._dateTimeFromJson(json['createdAt'] as String),
+      createdAt: _dateTimeFromJson(json['createdAt'] as String),
     );
 
-Map<String, dynamic> _$BoardListItemResponseToJson(
-        BoardListItemResponse instance) =>
+Map<String, dynamic> _$$BoardListItemResponseImplToJson(
+        _$BoardListItemResponseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'category': instance.category,
-      'createdAt': BoardListItemResponse._dateTimeToJson(instance.createdAt),
+      'createdAt': _dateTimeToJson(instance.createdAt),
     };
 
-Pageable _$PageableFromJson(Map<String, dynamic> json) => Pageable(
+_$PageableImpl _$$PageableImplFromJson(Map<String, dynamic> json) =>
+    _$PageableImpl(
       pageNumber: (json['pageNumber'] as num).toInt(),
       pageSize: (json['pageSize'] as num).toInt(),
       offset: (json['offset'] as num).toInt(),
@@ -54,7 +55,8 @@ Pageable _$PageableFromJson(Map<String, dynamic> json) => Pageable(
       unpaged: json['unpaged'] as bool,
     );
 
-Map<String, dynamic> _$PageableToJson(Pageable instance) => <String, dynamic>{
+Map<String, dynamic> _$$PageableImplToJson(_$PageableImpl instance) =>
+    <String, dynamic>{
       'pageNumber': instance.pageNumber,
       'pageSize': instance.pageSize,
       'offset': instance.offset,

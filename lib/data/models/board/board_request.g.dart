@@ -6,13 +6,14 @@ part of 'board_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BoardRequest _$BoardRequestFromJson(Map<String, dynamic> json) => BoardRequest(
+_$BoardRequestImpl _$$BoardRequestImplFromJson(Map<String, dynamic> json) =>
+    _$BoardRequestImpl(
       title: json['title'] as String,
       content: json['content'] as String,
       category: json['category'] as String,
     );
 
-Map<String, dynamic> _$BoardRequestToJson(BoardRequest instance) =>
+Map<String, dynamic> _$$BoardRequestImplToJson(_$BoardRequestImpl instance) =>
     <String, dynamic>{
       'title': instance.title,
       'content': instance.content,

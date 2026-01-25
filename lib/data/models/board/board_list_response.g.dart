@@ -6,8 +6,9 @@ part of 'board_list_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BoardListResponse _$BoardListResponseFromJson(Map<String, dynamic> json) =>
-    BoardListResponse(
+_$BoardListResponseImpl _$$BoardListResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$BoardListResponseImpl(
       content: (json['content'] as List<dynamic>)
           .map((e) => BoardListItemResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -22,7 +23,8 @@ BoardListResponse _$BoardListResponseFromJson(Map<String, dynamic> json) =>
       empty: json['empty'] as bool,
     );
 
-Map<String, dynamic> _$BoardListResponseToJson(BoardListResponse instance) =>
+Map<String, dynamic> _$$BoardListResponseImplToJson(
+        _$BoardListResponseImpl instance) =>
     <String, dynamic>{
       'content': instance.content,
       'pageable': instance.pageable,

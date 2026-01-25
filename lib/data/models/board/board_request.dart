@@ -1,22 +1,18 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+part 'board_request.freezed.dart';
 part 'board_request.g.dart';
 
 // 이건 안쓰임 삭제?
-@JsonSerializable()
-class BoardRequest {
-  final String title;
-  final String content;
-  final String category;
-
-  BoardRequest({
-    required this.title,
-    required this.content,
-    required this.category,
-  });
+@freezed
+class BoardRequest with _$BoardRequest {
+  const factory BoardRequest({
+    required String title,
+    required String content,
+    required String category,
+  }) = _BoardRequest;
 
   factory BoardRequest.fromJson(Map<String, dynamic> json) =>
       _$BoardRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$BoardRequestToJson(this);
 }

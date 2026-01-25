@@ -1,13 +1,13 @@
-class BoardListItem {
-  final int id;
-  final String title;
-  final String category;
-  final DateTime createdAt;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  BoardListItem({
-    required this.id,
-    required this.title,
-    required this.category,
-    required this.createdAt,
-  });
+part 'board_list_item.freezed.dart';
+
+@freezed
+class BoardListItem with _$BoardListItem {
+  const factory BoardListItem({
+    required int id,
+    required String title,
+    required String category,
+    required DateTime createdAt,
+  }) = _BoardListItem;
 }
