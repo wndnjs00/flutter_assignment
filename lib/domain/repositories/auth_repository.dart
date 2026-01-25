@@ -1,4 +1,4 @@
-import 'package:flutter_assignment/domain/entities/user.dart';
+import 'package:flutter_assignment/domain/entities/user/user.dart';
 
 abstract class AuthRepository {
   Future<User> signup({

@@ -49,15 +49,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const BoardListScreen(),
                 routes: [
                   GoRoute(
+                    path: 'board/new',
+                    builder: (context, state) => const BoardFormScreen(),
+                  ),
+                  GoRoute(
                     path: 'board/:id',
                     builder: (context, state) {
                       final id = int.parse(state.pathParameters['id']!);
                       return BoardDetailScreen(boardId: id);
                     },
-                  ),
-                  GoRoute(
-                    path: 'board/new',
-                    builder: (context, state) => const BoardFormScreen(),
                   ),
                   GoRoute(
                     path: 'board/:id/edit',

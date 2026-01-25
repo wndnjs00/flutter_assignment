@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_assignment/domain/entities/user.dart';
+import 'package:flutter_assignment/domain/entities/user/user.dart';
 import 'package:flutter_assignment/domain/repositories/auth_repository.dart';
 import 'package:flutter_assignment/presentation/providers/auth_provider.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
