@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_assignment/data/datasources/local/local_storage_service.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_detail_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/api_constants.dart';
 
-class BoardDetailScreen extends ConsumerWidget {
+final localStorageProvider = Provider((ref) => LocalStorageService());
+
+class BoardDetailScreen extends ConsumerStatefulWidget {
   final int boardId;
 
   const BoardDetailScreen({
@@ -14,6 +17,11 @@ class BoardDetailScreen extends ConsumerWidget {
     required this.boardId,
   });
 
+  @override
+  ConsumerState<BoardDetailScreen> createState() => _BoardDetailScreenState();
+}
+
+class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   String _getCategoryName(String categoryKey, WidgetRef ref) {
     final categories = ref.read(boardListViewModelProvider).categories;
     return categories[categoryKey] ?? categoryKey;
@@ -21,6 +29,10 @@ class BoardDetailScreen extends ConsumerWidget {
 
   String _formatDate(DateTime date) {
     return DateFormat('yyyy-MM-dd HH:mm').format(date);
+  }
+
+  bool _isMyPost() {
+    return ref.read(localStorageProvider).isMyPost(widget.boardId);
   }
 
   Future<void> _deleteBoard(BuildContext context, WidgetRef ref) async {
@@ -68,11 +80,14 @@ class BoardDetailScreen extends ConsumerWidget {
 
     if (confirm == true) {
       final success = await ref
-          .read(boardDetailViewModelProvider(boardId).notifier)
+          .read(boardDetailViewModelProvider(widget.boardId).notifier)
           .deleteBoard();
 
       if (context.mounted) {
         if (success) {
+          // 로컬 저장소에서도 삭제
+          await ref.read(localStorageProvider).removeMyPost(widget.boardId);
+
           ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +102,7 @@ class BoardDetailScreen extends ConsumerWidget {
           );
           context.go('/');
         } else {
-          final error = ref.read(boardDetailViewModelProvider(boardId)).error;
+          final error = ref.read(boardDetailViewModelProvider(widget.boardId)).error;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(error ?? '삭제에 실패했습니다'),
@@ -104,8 +119,9 @@ class BoardDetailScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final boardState = ref.watch(boardDetailViewModelProvider(boardId));
+  Widget build(BuildContext context) {
+    final boardState = ref.watch(boardDetailViewModelProvider(widget.boardId));
+    final isMyPost = _isMyPost();
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -125,12 +141,12 @@ class BoardDetailScreen extends ConsumerWidget {
           onPressed: () => context.go('/'),
         ),
         actions: [
-          if (boardState.board != null) ...[
+          if (boardState.board != null && isMyPost) ...[
             IconButton(
               icon: const Icon(Icons.edit_outlined, color: Colors.black87),
               tooltip: '수정',
               onPressed: () {
-                context.go('/board/$boardId/edit');
+                context.go('/board/${widget.boardId}/edit');
               },
             ),
             IconButton(
@@ -166,7 +182,7 @@ class BoardDetailScreen extends ConsumerWidget {
             FilledButton.icon(
               onPressed: () {
                 ref
-                    .read(boardDetailViewModelProvider(boardId).notifier)
+                    .read(boardDetailViewModelProvider(widget.boardId).notifier)
                     .loadBoard();
               },
               icon: const Icon(Icons.refresh),
@@ -201,6 +217,7 @@ class BoardDetailScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
+            // 제목 및 메타정보
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(20),
@@ -271,42 +288,48 @@ class BoardDetailScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
 
+            // 이미지 (스크롤 가능)
             if (boardState.board!.imageUrl != null)
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    '${ApiConstants.baseUrl}${boardState.board!.imageUrl}',
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.grey.shade200,
-                            width: 1,
-                          ),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            size: 64,
-                            color: Colors.grey.shade300,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                height: 250,
+                child: PageView(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        '${ApiConstants.baseUrl}${boardState.board!.imageUrl}',
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.grey.shade200,
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                size: 64,
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
             if (boardState.board!.imageUrl != null)
               const SizedBox(height: 12),
 
+            // 내용
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(20),

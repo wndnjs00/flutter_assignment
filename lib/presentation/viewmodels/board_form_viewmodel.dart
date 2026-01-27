@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_assignment/data/datasources/local/local_storage_service.dart';
 import 'package:flutter_assignment/domain/repositories/board_repository.dart';
 import 'package:flutter_assignment/presentation/providers/board_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,10 +17,13 @@ class BoardFormState with _$BoardFormState {
   }) = _BoardFormState;
 }
 
+final localStorageProvider = Provider((ref) => LocalStorageService());
+
 class BoardFormViewModel extends StateNotifier<BoardFormState> {
   final BoardRepository _boardRepository;
+  final LocalStorageService _localStorage;
 
-  BoardFormViewModel(this._boardRepository) : super(BoardFormState());
+  BoardFormViewModel(this._boardRepository, this._localStorage) : super(BoardFormState());
 
   Future<bool> createBoard({
     required String title,
@@ -30,12 +34,15 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      await _boardRepository.createBoard(
+      final boardId = await _boardRepository.createBoard(
         title: title,
         content: content,
         category: category,
         image: image,
       );
+
+      // 로컬 저장소에 내가 작성한 글로 등록
+      await _localStorage.addMyPost(boardId);
 
       state = state.copyWith(isLoading: false, successMessage: '게시글이 등록되었습니다');
       return true;
@@ -77,6 +84,9 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
 }
 
 final boardFormViewModelProvider =
-    StateNotifierProvider<BoardFormViewModel, BoardFormState>((ref) {
-      return BoardFormViewModel(ref.read(boardRepositoryProvider));
-    });
+StateNotifierProvider<BoardFormViewModel, BoardFormState>((ref) {
+  return BoardFormViewModel(
+    ref.read(boardRepositoryProvider),
+    ref.read(localStorageProvider),
+  );
+});

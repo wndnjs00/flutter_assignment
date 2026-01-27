@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_assignment/data/datasources/board_remote_datasource.dart';
+import 'package:flutter_assignment/data/datasources/remote/board_remote_datasource.dart';
 import 'package:flutter_assignment/domain/entities/board/board.dart';
 import 'package:flutter_assignment/domain/entities/board/board_list_item.dart';
 import 'package:flutter_assignment/domain/entities/board/board_list_pagination.dart';

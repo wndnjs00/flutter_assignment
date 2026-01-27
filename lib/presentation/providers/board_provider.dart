@@ -1,4 +1,4 @@
-import 'package:flutter_assignment/data/datasources/board_remote_datasource.dart';
+import 'package:flutter_assignment/data/datasources/remote/board_remote_datasource.dart';
 import 'package:flutter_assignment/data/repositories/board_repository_impl.dart';
 import 'package:flutter_assignment/domain/repositories/board_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

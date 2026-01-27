@@ -1,5 +1,5 @@
 import 'package:flutter_assignment/core/constants/api_constants.dart';
-import 'package:flutter_assignment/data/datasources/auth_remote_datasource.dart';
+import 'package:flutter_assignment/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:flutter_assignment/data/models/auth/login_request.dart';
 import 'package:flutter_assignment/data/models/auth/signup_request.dart';
 import 'package:flutter_assignment/domain/entities/user/user.dart';
