@@ -58,6 +58,7 @@ class AuthRepositoryImpl implements AuthRepository {
     await _storage.deleteAll();
   }
 
+  // secure storage에 유저 정보 있으면, 자동로그인 처리
   @override
   Future<User?> getCurrentUser() async {
     final email = await _storage.read(key: ApiConstants.userEmailKey);
@@ -77,6 +78,8 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
+  /* 사용안함 (getCurrentUser()로 쓰고있음) -> 혹시몰라 확장용으로 만들어둔 함수*/
+  /* TODO: 삭제할것 */
   @override
   Future<bool> isLoggedIn() async {
     final accessToken = await _storage.read(key: ApiConstants.accessTokenKey);

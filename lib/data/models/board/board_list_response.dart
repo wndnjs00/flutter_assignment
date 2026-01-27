@@ -24,3 +24,18 @@ class BoardListResponse with _$BoardListResponse {
   factory BoardListResponse.fromJson(Map<String, dynamic> json) =>
       _$BoardListResponseFromJson(json);
 }
+
+
+@freezed
+class Pageable with _$Pageable {
+  const factory Pageable({
+    required int pageNumber,
+    required int pageSize,
+    required int offset,
+    required bool paged,
+    required bool unpaged,
+  }) = _Pageable;
+
+  factory Pageable.fromJson(Map<String, dynamic> json) =>
+      _$PageableFromJson(json);
+}

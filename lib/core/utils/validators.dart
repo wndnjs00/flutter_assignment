@@ -60,4 +60,30 @@ class Validators {
     }
     return null;
   }
+
+  static String? validateCategory(String? value) {
+    if (value == null || value.isEmpty) {
+      return '카테고리를 선택해주세요';
+    }
+    return null;
+  }
+
+  static String? validateTitle(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return '제목을 입력해주세요';
+    }
+    return null;
+  }
+
+  static String? validateContent(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return '내용을 입력해주세요';
+    }
+
+    if (value.trim().length < 50) {
+      return '내용은 50자 이상 입력해주세요';
+    }
+
+    return null;
+  }
 }

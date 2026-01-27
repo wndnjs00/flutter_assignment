@@ -28,7 +28,7 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final board = await _boardRepository.getBoard(boardId);
+      final board = await _boardRepository.getDetailBoard(boardId);
       state = state.copyWith(board: board, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -45,6 +45,8 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     }
   }
 
+  // TODO: 일단 아직은 호출되지 않는코드
+  // TODO: but, SnackBar / Alert 표시후 초기화하는 용도로 쓰자
   void clearError() {
     state = state.copyWith(error: null);
   }

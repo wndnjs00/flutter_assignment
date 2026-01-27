@@ -5,12 +5,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter_assignment/core/constants/api_constants.dart';
 import 'package:flutter_assignment/core/network/dio_client.dart';
 import 'package:flutter_assignment/data/models/board/board_create_response.dart';
+import 'package:flutter_assignment/data/models/board/board_detail_response.dart';
 import 'package:flutter_assignment/data/models/board/board_list_response.dart';
 import 'package:flutter_assignment/data/models/board/board_list_item_response.dart';
 
 class BoardRemoteDataSource {
   final Dio _dio = DioClient.instance;
 
+  // 글쓰기
   Future<BoardCreateResponse> createBoard({
     required String title,
     required String content,
@@ -44,7 +46,8 @@ class BoardRemoteDataSource {
     }
   }
 
-  Future<BoardDetailResponse> getBoard(int id) async {
+  // 글 조회 (디테일)
+  Future<BoardDetailResponse> getDetailBoard(int id) async {
     try {
       final response = await _dio.get('${ApiConstants.boards}/$id');
       return BoardDetailResponse.fromJson(response.data);
@@ -53,6 +56,7 @@ class BoardRemoteDataSource {
     }
   }
 
+  // 글목록 조회
   Future<BoardListResponse> getBoardList({
     required int page,
     required int size,
@@ -68,6 +72,7 @@ class BoardRemoteDataSource {
     }
   }
 
+  // 글수정
   Future<void> updateBoard({
     required int id,
     required String title,
@@ -99,6 +104,7 @@ class BoardRemoteDataSource {
     }
   }
 
+  // 글 삭제
   Future<void> deleteBoard(int id) async {
     try {
       await _dio.delete('${ApiConstants.boards}/$id');
@@ -107,6 +113,7 @@ class BoardRemoteDataSource {
     }
   }
 
+  // 게시판 카테고리
   Future<Map<String, String>> getCategories() async {
     try {
       final response = await _dio.get(ApiConstants.boardCategories);

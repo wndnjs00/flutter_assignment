@@ -12,6 +12,7 @@ class BoardRepositoryImpl implements BoardRepository {
 
   BoardRepositoryImpl(this._remoteDataSource);
 
+  // 글쓰기
   @override
   Future<int> createBoard({
     required String title,
@@ -28,9 +29,10 @@ class BoardRepositoryImpl implements BoardRepository {
     return response.id;
   }
 
+  // 글조회 (디테일 페이지조회)
   @override
-  Future<Board> getBoard(int id) async {
-    final response = await _remoteDataSource.getBoard(id);
+  Future<Board> getDetailBoard(int id) async {
+    final response = await _remoteDataSource.getDetailBoard(id);
 
     return Board(
       id: response.id,
@@ -42,6 +44,8 @@ class BoardRepositoryImpl implements BoardRepository {
     );
   }
 
+
+  // 글목록 조회
   @override
   Future<BoardListPagination> getBoardList({
     required int page,
@@ -73,6 +77,7 @@ class BoardRepositoryImpl implements BoardRepository {
     return BoardListPagination(items: items, pagination: pagination);
   }
 
+  // 글수정
   @override
   Future<void> updateBoard({
     required int id,
@@ -89,11 +94,13 @@ class BoardRepositoryImpl implements BoardRepository {
     );
   }
 
+  // 글삭제
   @override
   Future<void> deleteBoard(int id) async {
     await _remoteDataSource.deleteBoard(id);
   }
 
+  // 게시판 카테고리
   @override
   Future<Map<String, String>> getCategories() async {
     return await _remoteDataSource.getCategories();

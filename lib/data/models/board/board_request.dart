@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'board_request.freezed.dart';
 part 'board_request.g.dart';
 
-// 이건 안쓰임 삭제?
+// TODO: 안쓰임 -> 삭제하기!
 @freezed
 class BoardRequest with _$BoardRequest {
   const factory BoardRequest({

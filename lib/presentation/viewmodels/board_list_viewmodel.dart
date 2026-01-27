@@ -88,6 +88,8 @@ class BoardListViewModel extends StateNotifier<BoardListState> {
     }
   }
 
+  // TODO: 일단 아직은 호출되지 않는코드
+  // TODO: but, SnackBar / Alert 표시후 초기화하는 용도로 쓰자
   void clearError() {
     state = state.copyWith(error: null);
   }

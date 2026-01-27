@@ -37,3 +37,21 @@ Map<String, dynamic> _$$BoardListResponseImplToJson(
       'first': instance.first,
       'empty': instance.empty,
     };
+
+_$PageableImpl _$$PageableImplFromJson(Map<String, dynamic> json) =>
+    _$PageableImpl(
+      pageNumber: (json['pageNumber'] as num).toInt(),
+      pageSize: (json['pageSize'] as num).toInt(),
+      offset: (json['offset'] as num).toInt(),
+      paged: json['paged'] as bool,
+      unpaged: json['unpaged'] as bool,
+    );
+
+Map<String, dynamic> _$$PageableImplToJson(_$PageableImpl instance) =>
+    <String, dynamic>{
+      'pageNumber': instance.pageNumber,
+      'pageSize': instance.pageSize,
+      'offset': instance.offset,
+      'paged': instance.paged,
+      'unpaged': instance.unpaged,
+    };

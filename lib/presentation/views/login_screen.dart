@@ -46,7 +46,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
       }
 
-      if (next.isSuccess && previous?.isSuccess != next.isSuccess) {}
+      if (next.isSuccess && previous?.isSuccess != next.isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('로그인이 완료되었습니다'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     });
 
     return Scaffold(
@@ -109,12 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     obscureText: _obscurePassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return '비밀번호를 입력해주세요';
-                      }
-                      return null;
-                    },
+                    validator: Validators.validatePassword,
                     enabled: !loginState.isLoading,
                   ),
                   const SizedBox(height: 24),
