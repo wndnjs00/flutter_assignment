@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_assignment/data/datasources/local/local_storage_service.dart';
-import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/like_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/api_constants.dart';
-
-final localStorageProvider = Provider((ref) => LocalStorageService());
 
 class BoardListScreen extends ConsumerStatefulWidget {
   const BoardListScreen({super.key});
@@ -57,28 +54,10 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
     return DateFormat('yyyy-MM-dd HH:mm').format(date);
   }
 
-  void _toggleLike(int postId) {
-    final authState = ref.read(authViewModelProvider);
-    final userEmail = authState.user?.email;
-
-    if (userEmail == null) return;
-
-    ref.read(localStorageProvider).toggleLike(userEmail, postId);
-    setState(() {});
-  }
-
-  bool _isLiked(int postId) {
-    final authState = ref.read(authViewModelProvider);
-    final userEmail = authState.user?.email;
-
-    if (userEmail == null) return false;
-
-    return ref.read(localStorageProvider).isLiked(userEmail, postId);
-  }
-
   @override
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardListViewModelProvider);
+    final likeState = ref.watch(likeViewModelProvider);
 
     var filteredBoards = boardState.boards;
 
@@ -220,7 +199,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                   }
 
                   final board = filteredBoards[index];
-                  final isLiked = _isLiked(board.id);
+                  final isLiked = likeState.likedPostIds.contains(board.id);
 
                   return Material(
                     color: Colors.white,
@@ -251,7 +230,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                                   ),
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
-                                  onPressed: () => _toggleLike(board.id),
+                                  onPressed: () => ref.read(likeViewModelProvider.notifier).toggleLike(board.id),
                                 ),
                               ],
                             ),

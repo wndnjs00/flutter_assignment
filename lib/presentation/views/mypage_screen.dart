@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_assignment/data/datasources/local/local_storage_service.dart';
 import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/like_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
-final localStorageProvider = Provider((ref) => LocalStorageService());
 
 class MypageScreen extends ConsumerStatefulWidget {
   const MypageScreen({super.key});
@@ -25,12 +24,13 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
     return categories[categoryKey] ?? categoryKey;
   }
 
-  // 화면이 보일 때마다 데이터 새로고침
   @override
   void initState() {
     super.initState();
+    // 화면이 보일 때마다 좋아요 및 내 게시글 목록 새로고침
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {});
+      ref.read(likeViewModelProvider.notifier).refresh();
+      ref.read(myPostsViewModelProvider.notifier).refresh();
     });
   }
 
@@ -38,7 +38,8 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authViewModelProvider);
     final boardState = ref.watch(boardListViewModelProvider);
-    final localStorage = ref.watch(localStorageProvider);
+    final likeState = ref.watch(likeViewModelProvider);
+    final myPostsState = ref.watch(myPostsViewModelProvider);
 
     final userEmail = authState.user?.email;
 
@@ -51,15 +52,12 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
       );
     }
 
-    final likedPostIds = localStorage.getLikedPosts(userEmail);
-    final myPostIds = localStorage.getMyPosts(userEmail);
-
     final likedBoards = boardState.boards
-        .where((board) => likedPostIds.contains(board.id))
+        .where((board) => likeState.likedPostIds.contains(board.id))
         .toList();
 
     final myBoards = boardState.boards
-        .where((board) => myPostIds.contains(board.id))
+        .where((board) => myPostsState.myPostIds.contains(board.id))
         .toList();
 
     return Scaffold(
