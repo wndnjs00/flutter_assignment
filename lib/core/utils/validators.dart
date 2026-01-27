@@ -80,8 +80,8 @@ class Validators {
       return '내용을 입력해주세요';
     }
 
-    if (value.trim().length < 50) {
-      return '내용은 50자 이상 입력해주세요';
+    if (value.trim().length < 10) {
+      return '내용은 10자 이상 입력해주세요';
     }
 
     return null;
