@@ -1,11 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_assignment/core/constants/api_constants.dart';
+import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiInterceptor extends Interceptor {
   final FlutterSecureStorage _storage;
+  final Ref? _ref;
 
-  ApiInterceptor(this._storage);
+  ApiInterceptor(this._storage, [this._ref]);
 
   @override
   Future<void> onRequest(
@@ -43,8 +46,11 @@ class ApiInterceptor extends Interceptor {
             final newAccessToken = response.data['accessToken'];
             final newRefreshToken = response.data['refreshToken'];
 
-            // _storage에 refreshTokenKey를 저장한다
-            // TODO: accessToken도 같이 저장해야 함 (보완대상)
+            // _storage에 accessToken, refreshTokenKey을 저장한다
+            await _storage.write(
+              key: ApiConstants.accessTokenKey,
+              value: newRefreshToken,
+            );
             await _storage.write(
               key: ApiConstants.refreshTokenKey,
               value: newRefreshToken,
@@ -68,8 +74,8 @@ class ApiInterceptor extends Interceptor {
         }
       } catch (e) {
         // refresh 실패시 강제 로그아웃 처리
-        // TODO: 보통 여기서 로그인화면으로 이동시킴
         await _storage.deleteAll();
+        _ref?.read(authViewModelProvider.notifier).logout();
       }
     }
     return handler.next(err);
