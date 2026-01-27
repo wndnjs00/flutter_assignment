@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_assignment/data/datasources/local/local_storage_service.dart';
+import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -57,12 +58,22 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
   }
 
   void _toggleLike(int postId) {
-    ref.read(localStorageProvider).toggleLike(postId);
+    final authState = ref.read(authViewModelProvider);
+    final userEmail = authState.user?.email;
+
+    if (userEmail == null) return;
+
+    ref.read(localStorageProvider).toggleLike(userEmail, postId);
     setState(() {});
   }
 
   bool _isLiked(int postId) {
-    return ref.read(localStorageProvider).isLiked(postId);
+    final authState = ref.read(authViewModelProvider);
+    final userEmail = authState.user?.email;
+
+    if (userEmail == null) return false;
+
+    return ref.read(localStorageProvider).isLiked(userEmail, postId);
   }
 
   @override
@@ -77,7 +88,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
           .toList();
     }
 
-    // 제목 + 내용 검색
+    // 제목 검색
     if (_searchQuery.isNotEmpty) {
       filteredBoards = filteredBoards.where((board) {
         final query = _searchQuery.toLowerCase();
@@ -96,7 +107,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: '제목 또는 내용 검색',
+                hintText: '제목 검색',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(

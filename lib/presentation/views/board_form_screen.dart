@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_detail_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_form_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
@@ -94,6 +95,19 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final authState = ref.read(authViewModelProvider);
+    final userEmail = authState.user?.email;
+
+    if (userEmail == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('로그인 정보를 찾을 수 없습니다'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final success = isEditMode
         ? await ref.read(boardFormViewModelProvider.notifier).updateBoard(
       id: widget.boardId!,
@@ -103,6 +117,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
       image: _selectedImage,
     )
         : await ref.read(boardFormViewModelProvider.notifier).createBoard(
+      userEmail: userEmail,
       title: _titleController.text.trim(),
       content: _contentController.text.trim(),
       category: _selectedCategory!,

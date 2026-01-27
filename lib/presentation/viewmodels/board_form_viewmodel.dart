@@ -26,6 +26,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
   BoardFormViewModel(this._boardRepository, this._localStorage) : super(BoardFormState());
 
   Future<bool> createBoard({
+    required String userEmail,
     required String title,
     required String content,
     required String category,
@@ -41,8 +42,8 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
         image: image,
       );
 
-      // 로컬 저장소에 내가 작성한 글로 등록
-      await _localStorage.addMyPost(boardId);
+      // 로컬 저장소에 내가 작성한 글로 등록 (사용자 이메일 포함)
+      await _localStorage.addMyPost(userEmail, boardId);
 
       state = state.copyWith(isLoading: false, successMessage: '게시글이 등록되었습니다');
       return true;

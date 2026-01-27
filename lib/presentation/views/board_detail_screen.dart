@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_assignment/data/datasources/local/local_storage_service.dart';
+import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_detail_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,12 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   }
 
   bool _isMyPost() {
-    return ref.read(localStorageProvider).isMyPost(widget.boardId);
+    final authState = ref.read(authViewModelProvider);
+    final userEmail = authState.user?.email;
+
+    if (userEmail == null) return false;
+
+    return ref.read(localStorageProvider).isMyPost(userEmail, widget.boardId);
   }
 
   Future<void> _deleteBoard(BuildContext context, WidgetRef ref) async {
@@ -85,8 +91,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
       if (context.mounted) {
         if (success) {
-          // 로컬 저장소에서도 삭제
-          await ref.read(localStorageProvider).removeMyPost(widget.boardId);
+          final authState = ref.read(authViewModelProvider);
+          final userEmail = authState.user?.email;
+
+          if (userEmail != null) {
+            // 로컬 저장소에서도 삭제
+            await ref.read(localStorageProvider).removeMyPost(userEmail, widget.boardId);
+          }
 
           ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 

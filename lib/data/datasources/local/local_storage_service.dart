@@ -11,41 +11,90 @@ class LocalStorageService {
     await Hive.openBox<int>(_myPostsBoxName);
   }
 
-  // 좋아요한 게시글
+  // 좋아요한 게시글 (사용자별로 분리)
   Box<int> get _likedBox => Hive.box<int>(_likedPostsBoxName);
 
-  List<int> getLikedPosts() {
-    return _likedBox.values.toList();
+  String _getLikedKey(String userEmail, int postId) {
+    return '${userEmail}_$postId';
   }
 
-  bool isLiked(int postId) {
-    return _likedBox.containsKey(postId);
+  List<int> getLikedPosts(String userEmail) {
+    final allKeys = _likedBox.keys.toList();
+    final userKeys = allKeys
+        .where((key) => key.toString().startsWith('${userEmail}_'))
+        .toList();
+
+    return userKeys.map((key) {
+      final postId = key.toString().split('_').last;
+      return int.parse(postId);
+    }).toList();
   }
 
-  Future<void> toggleLike(int postId) async {
-    if (isLiked(postId)) {
-      await _likedBox.delete(postId);
+  bool isLiked(String userEmail, int postId) {
+    final key = _getLikedKey(userEmail, postId);
+    return _likedBox.containsKey(key);
+  }
+
+  Future<void> toggleLike(String userEmail, int postId) async {
+    final key = _getLikedKey(userEmail, postId);
+    if (isLiked(userEmail, postId)) {
+      await _likedBox.delete(key);
     } else {
-      await _likedBox.put(postId, postId);
+      await _likedBox.put(key, postId);
     }
   }
 
-  // 내가 작성한 게시글
+  // 내가 작성한 게시글 (사용자별로 분리)
   Box<int> get _myPostsBox => Hive.box<int>(_myPostsBoxName);
 
-  List<int> getMyPosts() {
-    return _myPostsBox.values.toList();
+  String _getMyPostKey(String userEmail, int postId) {
+    return '${userEmail}_$postId';
   }
 
-  bool isMyPost(int postId) {
-    return _myPostsBox.containsKey(postId);
+  List<int> getMyPosts(String userEmail) {
+    final allKeys = _myPostsBox.keys.toList();
+    final userKeys = allKeys
+        .where((key) => key.toString().startsWith('${userEmail}_'))
+        .toList();
+
+    return userKeys.map((key) {
+      final postId = key.toString().split('_').last;
+      return int.parse(postId);
+    }).toList();
   }
 
-  Future<void> addMyPost(int postId) async {
-    await _myPostsBox.put(postId, postId);
+  bool isMyPost(String userEmail, int postId) {
+    final key = _getMyPostKey(userEmail, postId);
+    return _myPostsBox.containsKey(key);
   }
 
-  Future<void> removeMyPost(int postId) async {
-    await _myPostsBox.delete(postId);
+  Future<void> addMyPost(String userEmail, int postId) async {
+    final key = _getMyPostKey(userEmail, postId);
+    await _myPostsBox.put(key, postId);
+  }
+
+  Future<void> removeMyPost(String userEmail, int postId) async {
+    final key = _getMyPostKey(userEmail, postId);
+    await _myPostsBox.delete(key);
+  }
+
+  // 로그아웃 시 특정 사용자 데이터 삭제
+  // TODO: 혹시몰라 만들어둔 함수 -> 사용하지 않을거면 삭제하기
+  Future<void> clearUserData(String userEmail) async {
+    // 좋아요 데이터 삭제
+    final likedKeys = _likedBox.keys
+        .where((key) => key.toString().startsWith('${userEmail}_'))
+        .toList();
+    for (final key in likedKeys) {
+      await _likedBox.delete(key);
+    }
+
+    // 내 게시글 데이터 삭제
+    final myPostKeys = _myPostsBox.keys
+        .where((key) => key.toString().startsWith('${userEmail}_'))
+        .toList();
+    for (final key in myPostKeys) {
+      await _myPostsBox.delete(key);
+    }
   }
 }
