@@ -1,20 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_assignment/core/constants/api_constants.dart';
-import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiInterceptor extends Interceptor {
   final FlutterSecureStorage _storage;
-  final Ref? _ref;
 
-  ApiInterceptor(this._storage, [this._ref]);
+  ApiInterceptor(this._storage);
 
   @override
   Future<void> onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+      RequestOptions options,
+      RequestInterceptorHandler handler,
+      ) async {
     final accessToken = await _storage.read(key: ApiConstants.accessTokenKey);
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
@@ -24,13 +21,11 @@ class ApiInterceptor extends Interceptor {
 
   @override
   Future<void> onError(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) async {
+      DioException err,
+      ErrorInterceptorHandler handler,
+      ) async {
     if (err.response?.statusCode == 401) {
       try {
-        // 기기에 저장된 토큰을 _storage에서 꺼낸다(읽는다)
-        // 아직 재로그인하지않고, 토큰이 갱신가능한 상태인지, 저장된 토큰 여부에 따라 판단
         final refreshToken = await _storage.read(
           key: ApiConstants.refreshTokenKey,
         );
@@ -46,19 +41,18 @@ class ApiInterceptor extends Interceptor {
             final newAccessToken = response.data['accessToken'];
             final newRefreshToken = response.data['refreshToken'];
 
-            // _storage에 accessToken, refreshTokenKey을 저장한다
+            // accessToken도 저장
             await _storage.write(
               key: ApiConstants.accessTokenKey,
-              value: newRefreshToken,
+              value: newAccessToken,
             );
             await _storage.write(
               key: ApiConstants.refreshTokenKey,
               value: newRefreshToken,
             );
 
-            // 원래 요청 재시도 (토큰만 새걸로 갱신해서, 아까 실패했던 요청을 그대로 다시보냄)
             err.requestOptions.headers['Authorization'] =
-                'Bearer $newAccessToken';
+            'Bearer $newAccessToken';
             final cloneReq = await dio.request(
               err.requestOptions.path,
               options: Options(
@@ -73,9 +67,7 @@ class ApiInterceptor extends Interceptor {
           }
         }
       } catch (e) {
-        // refresh 실패시 강제 로그아웃 처리
         await _storage.deleteAll();
-        _ref?.read(authViewModelProvider.notifier).logout();
       }
     }
     return handler.next(err);

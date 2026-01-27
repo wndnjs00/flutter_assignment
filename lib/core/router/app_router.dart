@@ -14,12 +14,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/login',
     redirect: (context, state) {
       final authState = ref.watch(authViewModelProvider);
-
       final isAuthenticated = authState.isAuthenticated;
-
       final isLoggingIn =
           state.matchedLocation == '/login' ||
-          state.matchedLocation == '/signup';
+              state.matchedLocation == '/signup';
 
       if (!isAuthenticated && !isLoggingIn) {
         return '/login';
@@ -31,10 +29,32 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
       GoRoute(
         path: '/signup',
         builder: (context, state) => const SignupScreen(),
+      ),
+
+      GoRoute(
+        path: '/board/new',
+        builder: (context, state) => const BoardFormScreen(),
+      ),
+      GoRoute(
+        path: '/board/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return BoardDetailScreen(boardId: id);
+        },
+      ),
+      GoRoute(
+        path: '/board/:id/edit',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return BoardFormScreen(boardId: id);
+        },
       ),
 
       StatefulShellRoute.indexedStack(
@@ -47,26 +67,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/',
                 builder: (context, state) => const BoardListScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'board/new',
-                    builder: (context, state) => const BoardFormScreen(),
-                  ),
-                  GoRoute(
-                    path: 'board/:id',
-                    builder: (context, state) {
-                      final id = int.parse(state.pathParameters['id']!);
-                      return BoardDetailScreen(boardId: id);
-                    },
-                  ),
-                  GoRoute(
-                    path: 'board/:id/edit',
-                    builder: (context, state) {
-                      final id = int.parse(state.pathParameters['id']!);
-                      return BoardFormScreen(boardId: id);
-                    },
-                  ),
-                ],
               ),
             ],
           ),

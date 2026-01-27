@@ -127,18 +127,34 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     if (!mounted) return;
 
     if (success) {
+      // 게시판 목록 새로고침
       ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
-      final message = ref.read(boardFormViewModelProvider).successMessage;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message ?? '완료되었습니다'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      // 수정 모드인 경우 상세 페이지도 새로고침
+      if (isEditMode) {
+        await ref
+            .read(boardDetailViewModelProvider(widget.boardId!).notifier)
+            .loadBoard();
+      }
 
-      ref.read(boardFormViewModelProvider.notifier).clearMessages();
-      context.go('/');
+      final message = ref.read(boardFormViewModelProvider).successMessage;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message ?? '완료되었습니다'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        ref.read(boardFormViewModelProvider.notifier).clearMessages();
+
+        // 수정 시에는 상세 페이지로, 생성 시에는 목록으로
+        if (isEditMode) {
+          context.go('/board/${widget.boardId}');
+        } else {
+          context.go('/');
+        }
+      }
     } else {
       final error = ref.read(boardFormViewModelProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(

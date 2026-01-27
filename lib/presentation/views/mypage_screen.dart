@@ -8,9 +8,14 @@ import 'package:intl/intl.dart';
 
 final localStorageProvider = Provider((ref) => LocalStorageService());
 
-class MypageScreen extends ConsumerWidget {
+class MypageScreen extends ConsumerStatefulWidget {
   const MypageScreen({super.key});
 
+  @override
+  ConsumerState<MypageScreen> createState() => _MypageScreenState();
+}
+
+class _MypageScreenState extends ConsumerState<MypageScreen> {
   String _formatDate(DateTime date) {
     return DateFormat('yyyy-MM-dd HH:mm').format(date);
   }
@@ -20,8 +25,17 @@ class MypageScreen extends ConsumerWidget {
     return categories[categoryKey] ?? categoryKey;
   }
 
+  // 화면이 보일 때마다 데이터 새로고침
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authViewModelProvider);
     final boardState = ref.watch(boardListViewModelProvider);
     final localStorage = ref.watch(localStorageProvider);

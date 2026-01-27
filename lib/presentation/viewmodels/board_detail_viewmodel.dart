@@ -20,7 +20,7 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
   final int boardId;
 
   BoardDetailViewModel(this._boardRepository, this.boardId)
-    : super(BoardDetailState()) {
+      : super(BoardDetailState()) {
     loadBoard();
   }
 
@@ -45,17 +45,20 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     }
   }
 
-  // TODO: 일단 아직은 호출되지 않는코드
-  // TODO: but, SnackBar / Alert 표시후 초기화하는 용도로 쓰자
+  // 게시글 정보 업데이트 메서드
+  void updateBoard(Board board) {
+    state = state.copyWith(board: board);
+  }
+
   void clearError() {
     state = state.copyWith(error: null);
   }
 }
 
 final boardDetailViewModelProvider =
-    StateNotifierProvider.family<BoardDetailViewModel, BoardDetailState, int>((
-      ref,
-      boardId,
+StateNotifierProvider.family<BoardDetailViewModel, BoardDetailState, int>((
+    ref,
+    boardId,
     ) {
-      return BoardDetailViewModel(ref.read(boardRepositoryProvider), boardId);
-    });
+  return BoardDetailViewModel(ref.read(boardRepositoryProvider), boardId);
+});
