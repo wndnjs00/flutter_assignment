@@ -1,18 +1,16 @@
+import 'package:flutter_assignment/core/constants/api_constants.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class LocalStorageService {
-  static const String _likedPostsBoxName = 'liked_posts';
-  static const String _myPostsBoxName = 'my_posts';
-
   static Future<void> init() async {
     await Hive.initFlutter();
-    await Hive.openBox<int>(_likedPostsBoxName);
-    await Hive.openBox<int>(_myPostsBoxName);
+    await Hive.openBox<int>(ApiConstants.likedPostsBoxName);
+    await Hive.openBox<int>(ApiConstants.myPostsBoxName);
   }
 
   // 좋아요한 게시글 (사용자별로 분리)
-  Box<int> get _likedBox => Hive.box<int>(_likedPostsBoxName);
+  Box<int> get _likedBox => Hive.box<int>(ApiConstants.likedPostsBoxName);
 
   String _getLikedKey(String userEmail, int postId) {
     return '${userEmail}_$postId';
@@ -45,7 +43,7 @@ class LocalStorageService {
   }
 
   // 내가 작성한 게시글 (사용자별로 분리)
-  Box<int> get _myPostsBox => Hive.box<int>(_myPostsBoxName);
+  Box<int> get _myPostsBox => Hive.box<int>(ApiConstants.myPostsBoxName);
 
   String _getMyPostKey(String userEmail, int postId) {
     return '${userEmail}_$postId';

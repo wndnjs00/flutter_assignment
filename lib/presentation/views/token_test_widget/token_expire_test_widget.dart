@@ -57,7 +57,7 @@ class TokenExpireTestWidget extends StatelessWidget {
                     const storage = FlutterSecureStorage();
                     await storage.write(
                       key: ApiConstants.accessTokenKey,
-                      value: 'expired_access_token_for_test',
+                      value: ApiConstants.expiredAccessTokenForTest,
                     );
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -86,7 +86,7 @@ class TokenExpireTestWidget extends StatelessWidget {
                     const storage = FlutterSecureStorage();
                     await storage.write(
                       key: ApiConstants.refreshTokenKey,
-                      value: 'expired_refresh_token_for_test',
+                      value: ApiConstants.expiredRefreshTokenForTest,
                     );
 
                     ScaffoldMessenger.of(context).showSnackBar(

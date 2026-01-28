@@ -12,4 +12,10 @@ class ApiConstants {
   static const String refreshTokenKey = 'refresh_token';
   static const String userNameKey = 'user_name';
   static const String userEmailKey = 'user_email';
+
+  static const String likedPostsBoxName = 'liked_posts';
+  static const String myPostsBoxName = 'my_posts';
+
+  static const String expiredAccessTokenForTest = 'expired_access_token_for_test';
+  static const String expiredRefreshTokenForTest = 'expired_refresh_token_for_test';
 }
