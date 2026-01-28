@@ -35,14 +35,14 @@
 flutter pub get
 ```
 
-1. **코드 생성 (Freezed, JSON Serializable)**
+2. **코드 생성 (Freezed, JSON Serializable)**
 
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-1. **에뮬레이터 실행 (또는 실제 기기 연결)**
-2. **앱 실행**
+3. **에뮬레이터 실행 (또는 실제 기기 연결)**
+4. **앱 실행**
 
 ```bash
 flutter run
