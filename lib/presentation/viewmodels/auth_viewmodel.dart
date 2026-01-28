@@ -1,4 +1,4 @@
-import 'package:flutter_assignment/presentation/providers/auth_provider_bridge.dart';
+import 'package:flutter_assignment/core/utils/auth_provider_bridge.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_assignment/domain/entities/user/user.dart';
 import 'package:flutter_assignment/domain/repositories/auth_repository.dart';

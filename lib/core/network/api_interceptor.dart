@@ -3,7 +3,7 @@ import 'package:flutter_assignment/core/constants/api_constants.dart';
 import 'package:flutter_assignment/core/network/dio_client.dart';
 import 'package:flutter_assignment/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:flutter_assignment/data/models/auth/refresh_request.dart';
-import 'package:flutter_assignment/presentation/providers/auth_provider_bridge.dart';
+import 'package:flutter_assignment/core/utils/auth_provider_bridge.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiInterceptor extends Interceptor {
