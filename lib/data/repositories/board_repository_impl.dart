@@ -91,6 +91,7 @@ class BoardRepositoryImpl implements BoardRepository {
       title: title,
       content: content,
       category: category,
+      image: image,
     );
   }
 

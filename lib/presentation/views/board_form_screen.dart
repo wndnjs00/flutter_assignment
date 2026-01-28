@@ -81,6 +81,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
       if (image != null) {
         setState(() {
           _selectedImage = File(image.path);
+          _existingImageUrl = null; // 새로운 이미지를 선택하면 기존 이미지 URL 제거
         });
       }
     } catch (e) {
