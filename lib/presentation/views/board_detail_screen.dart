@@ -284,47 +284,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ),
             const SizedBox(height: 12),
 
-            // 이미지 (스크롤 가능)
-            if (boardState.board!.imageUrl != null)
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                height: 250,
-                child: PageView(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        '${ApiConstants.baseUrl}${boardState.board!.imageUrl}',
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.grey.shade200,
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.broken_image_outlined,
-                                size: 64,
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            if (boardState.board!.imageUrl != null)
-              const SizedBox(height: 12),
-
             // 내용
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -348,6 +307,63 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
+            // 이미지 (스크롤 가능)
+            if (boardState.board!.imageUrl != null)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                height: 250,
+                child: PageView(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        '${ApiConstants.baseUrl}${boardState.board!.imageUrl}',
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          }
+                          return Container(
+                            color: Colors.grey.shade200,
+                            child: Center(
+                              child: Icon(
+                                Icons.image,
+                                color: Colors.grey.shade400,
+                                size: 48,
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.grey.shade200,
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.autorenew,
+                                size: 64,
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            if (boardState.board!.imageUrl != null)
+              const SizedBox(height: 12),
           ],
         ),
       ),
