@@ -86,6 +86,6 @@ flutter run
 
 ### 구조설계하며 고민했던 사항들
 
-[MVVM + Repository 패턴을 채택한 이유](https://www.notion.so/MVVM-Repository-2f65dca2121580beae41c20005ba182e?pvs=21)
+[MVVM + Repository 패턴을 채택한 이유](https://blush-zephyr-e3e.notion.site/MVVM-Repository-2f65dca2121580beae41c20005ba182e)
 
-[models 와 entities 를 분리한 이유](https://www.notion.so/models-entities-2f65dca2121580a693e1e6ba77c7be45?pvs=21)
+[models 와 entities 를 분리한 이유](https://blush-zephyr-e3e.notion.site/models-entities-2f65dca2121580a693e1e6ba77c7be45)
