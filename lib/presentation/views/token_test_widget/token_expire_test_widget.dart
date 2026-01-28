@@ -12,14 +12,14 @@ AccessToken / RefreshToken 만료 상황을 수동으로 만들어 테스트하�
 1. RefreshToken + AccessToken 모두 만료 경우 테스트
 - RefreshToken 만료 버튼 클릭
 - AccessToken 만료 버튼 클릭
-- 게시판 탭 이동 후 위로 스와이프
+- 커뮤니티 탭 이동 후 위로 스와이프
  → 로그인 화면 이동
 
 
 시나리오 2
 2. AccessToken만 만료된 경우 테스트
 - AccessToken 만료 버튼 클릭
-- 게시판 탭 이동 후 위로 스와이프
+- 커뮤니티 탭 이동 후 위로 스와이프
 → RefreshToken으로 AccessToken 자동 갱신 (로그아웃 없음)*/
 
 
@@ -63,7 +63,7 @@ class TokenExpireTestWidget extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          'AccessToken을 만료 상태로 변경했습니다.\n게시판 탭으로 이동해 테스트하세요.',
+                          'AccessToken을 만료 상태로 변경했습니다.\n커뮤니티 탭으로 이동해 테스트하세요.',
                         ),
                         backgroundColor: Colors.orange,
                       ),
@@ -92,7 +92,7 @@ class TokenExpireTestWidget extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          'RefreshToken을 만료 상태로 변경했습니다.\n게시판 탭으로 이동해 테스트하세요.',
+                          'RefreshToken을 만료 상태로 변경했습니다.\n커뮤니티 탭으로 이동해 테스트하세요.',
                         ),
                         backgroundColor: Colors.red,
                       ),

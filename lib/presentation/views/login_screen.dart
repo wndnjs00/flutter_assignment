@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_assignment/core/utils/asset_path.dart';
 import 'package:flutter_assignment/core/utils/validators.dart';
 import 'package:flutter_assignment/presentation/viewmodels/login_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,14 +69,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(
-                    Icons.article,
-                    size: 80,
-                    color: Theme.of(context).primaryColor,
+                  Image.asset(
+                    AssetPath.iconImage,
+                    width: 80,
+                    height: 80,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    '게시판 앱',
+                    '커뮤니티 앱',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

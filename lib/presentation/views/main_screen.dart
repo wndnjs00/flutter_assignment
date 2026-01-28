@@ -19,7 +19,7 @@ class MainScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(navigationShell.currentIndex == 0 ? '게시판' : '마이페이지'),
+        title: Text(navigationShell.currentIndex == 0 ? '커뮤니티' : '마이페이지'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -55,7 +55,7 @@ class MainScreen extends ConsumerWidget {
         currentIndex: navigationShell.currentIndex,
         onTap: (index) => _onTap(context, index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: '게시판'),
+          BottomNavigationBarItem(icon: Icon(Icons.article), label: '커뮤니티'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
         ],
       ),

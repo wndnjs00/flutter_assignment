@@ -127,7 +127,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     if (!mounted) return;
 
     if (success) {
-      // 게시판 목록 새로고침
+      // 커뮤니티 목록 새로고침
       ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
       // 수정 모드인 경우 상세 페이지도 새로고침

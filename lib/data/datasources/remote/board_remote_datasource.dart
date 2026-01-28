@@ -113,7 +113,7 @@ class BoardRemoteDataSource {
     }
   }
 
-  // 게시판 카테고리
+  // 커뮤니티 카테고리
   Future<Map<String, String>> getCategories() async {
     try {
       final response = await _dio.get(ApiConstants.boardCategories);

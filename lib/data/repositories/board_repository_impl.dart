@@ -100,7 +100,7 @@ class BoardRepositoryImpl implements BoardRepository {
     await _remoteDataSource.deleteBoard(id);
   }
 
-  // 게시판 카테고리
+  // 커뮤니티 카테고리
   @override
   Future<Map<String, String>> getCategories() async {
     return await _remoteDataSource.getCategories();

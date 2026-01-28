@@ -34,6 +34,6 @@ abstract class BoardRepository {
   // 글삭제
   Future<void> deleteBoard(int id);
 
-  // 게시판 카테고리
+  // 커뮤니티 카테고리
   Future<Map<String, String>> getCategories();
 }
