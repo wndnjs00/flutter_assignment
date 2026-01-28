@@ -3,10 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_assignment/domain/entities/user/user.dart';
 import 'package:flutter_assignment/domain/repositories/auth_repository.dart';
 import 'package:flutter_assignment/presentation/providers/auth_provider.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../core/constants/api_constants.dart';
 
 part 'auth_viewmodel.freezed.dart';
 

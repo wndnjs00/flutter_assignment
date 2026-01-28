@@ -26,32 +26,7 @@ class BoardListViewModel extends StateNotifier<BoardListState> {
   BoardListViewModel(this._boardRepository) : super(BoardListState()) {
     loadBoards();
     loadCategories();
-    // _deleteAllBoardsForTest(); /// TODO: ⚠️ 테스트 전용: 모든 게시글 삭제 -> 삭제할것!!!!
   }
-
-  /// TODO: ⚠️ 테스트 전용: 모든 게시글 삭제 -> 삭제할것!!!!
-  // Future<void> _deleteAllBoardsForTest() async {
-  //   try {
-  //     // 1. 첫 페이지 불러오기
-  //     final result = await _boardRepository.getBoardList(
-  //       page: 0,
-  //       size: 100, // 테스트니까 크게
-  //     );
-  //
-  //     // 2. 모든 게시글 삭제
-  //     for (final board in result.items) {
-  //       await _boardRepository.deleteBoard(board.id);
-  //     }
-  //
-  //     // 3. 상태 초기화
-  //     state = state.copyWith(
-  //       boards: [],
-  //       pagination: null,
-  //     );
-  //   } catch (e) {
-  //     // 테스트용이므로 실패 무시
-  //   }
-  // }
 
   Future<void> loadBoards({bool refresh = false}) async {
     if (refresh) {
@@ -108,13 +83,10 @@ class BoardListViewModel extends StateNotifier<BoardListState> {
     try {
       final categories = await _boardRepository.getCategories();
       state = state.copyWith(categories: categories);
-    } catch (e) {
-      // 카테고리 로드 실패는 무시
-    }
+    } catch (e) {}
   }
 
-  // TODO: 일단 아직은 호출되지 않는코드
-  // TODO: but, SnackBar / Alert 표시후 초기화하는 용도로 쓰자
+  // TODO: 사용되지 않음 -> 삭제 가능?
   void clearError() {
     state = state.copyWith(error: null);
   }

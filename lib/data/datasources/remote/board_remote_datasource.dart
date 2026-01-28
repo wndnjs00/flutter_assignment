@@ -7,7 +7,6 @@ import 'package:flutter_assignment/core/network/dio_client.dart';
 import 'package:flutter_assignment/data/models/board/board_create_response.dart';
 import 'package:flutter_assignment/data/models/board/board_detail_response.dart';
 import 'package:flutter_assignment/data/models/board/board_list_response.dart';
-import 'package:flutter_assignment/data/models/board/board_list_item_response.dart';
 
 class BoardRemoteDataSource {
   final Dio _dio = DioClient.instance;

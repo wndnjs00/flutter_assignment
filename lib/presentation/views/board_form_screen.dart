@@ -33,7 +33,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
   void initState() {
     super.initState();
     if (isEditMode) {
-      // 초기 데이터 로딩은 ViewModel에서 수행
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref
             .read(boardFormViewModelProvider.notifier)
@@ -61,7 +60,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
       if (image != null) {
         setState(() {
           _selectedImage = File(image.path);
-          _existingImageUrl = null; // 새로운 이미지를 선택하면 기존 이미지 URL 제거
+          _existingImageUrl = null;
         });
       }
     } catch (e) {
@@ -98,7 +97,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     ref.listen<BoardFormState>(
       boardFormViewModelProvider,
       (previous, next) {
-        // 초기 데이터(수정 모드) 주입: 화면은 상태를 반영만 한다.
         final initialChanged =
             (previous?.initialTitle != next.initialTitle) ||
                 (previous?.initialContent != next.initialContent) ||
@@ -128,7 +126,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
 
             ref.read(boardFormViewModelProvider.notifier).clearMessages();
 
-            // 수정 시에는 상세 페이지로, 생성 시에는 목록으로
             if (isEditMode && next.updatedBoardId != null) {
               context.go('/board/${next.updatedBoardId}');
             } else if (!isEditMode && next.createdBoardId != null) {

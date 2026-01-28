@@ -255,7 +255,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ),
             const SizedBox(height: 24),
 
-            // 이미지 (스크롤 가능)
             if (boardState.board!.imageUrl != null)
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),

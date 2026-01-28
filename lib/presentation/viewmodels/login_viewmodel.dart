@@ -34,7 +34,6 @@ class LoginViewModel extends StateNotifier<LoginState> {
 
       _ref.read(authViewModelProvider.notifier).setUser(user);
 
-      // 로그인 성공 시 좋아요 및 내 게시글 상태 새로고침
       _ref.read(likeViewModelProvider.notifier).refresh();
       _ref.read(myPostsViewModelProvider.notifier).refresh();
 

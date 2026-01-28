@@ -63,6 +63,7 @@ class LocalStorageService {
     }).toList();
   }
 
+  // TODO: 사용되지 않는 함수: 삭제해야되나?
   bool isMyPost(String userEmail, int postId) {
     final key = _getMyPostKey(userEmail, postId);
     return _myPostsBox.containsKey(key);
@@ -79,7 +80,7 @@ class LocalStorageService {
   }
 
   // 로그아웃 시 특정 사용자 데이터 삭제
-  // TODO: 혹시몰라 만들어둔 함수 -> 사용하지 않을거면 삭제하기
+  // TODO: 사용되지 않는 함수: 삭제해야되나?
   Future<void> clearUserData(String userEmail) async {
     // 좋아요 데이터 삭제
     final likedKeys = _likedBox.keys

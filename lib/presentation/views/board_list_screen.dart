@@ -22,7 +22,6 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
     super.initState();
     _scrollController.addListener(_onScroll);
     
-    // 화면 진입 시 좋아요 및 내 게시글 상태 새로고침
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(likeViewModelProvider.notifier).refresh();
       ref.read(myPostsViewModelProvider.notifier).refresh();

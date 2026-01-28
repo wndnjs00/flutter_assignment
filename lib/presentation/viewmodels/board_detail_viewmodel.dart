@@ -56,7 +56,7 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     }
   }
 
-  // 게시글 정보 업데이트 메서드
+  // 게시글 정보 업데이트
   void updateBoard(Board board) {
     state = state.copyWith(board: board);
   }

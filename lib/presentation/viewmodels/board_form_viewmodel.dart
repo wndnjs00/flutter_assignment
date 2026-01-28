@@ -120,7 +120,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
 
       // 내가 작성한 게시글 상태 업데이트
       await _ref.read(myPostsViewModelProvider.notifier).addMyPost(boardId);
-      // 목록 즉시 갱신(방금 작성한 글이 바로 보이도록)
+      // 목록 즉시 갱신
       _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
       state = state.copyWith(
@@ -165,10 +165,10 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
         image: image,
       );
 
-      // 수정된 상세 데이터를 즉시 반영(디테일 화면에서 바로 업데이트되도록)
+      // 수정된 상세 데이터를 즉시 반영
       final updatedBoard = await _boardRepository.getDetailBoard(id);
       _ref.read(boardDetailViewModelProvider(id).notifier).updateBoard(updatedBoard);
-      // 목록도 즉시 갱신(리스트에서 제목 등이 바로 바뀌도록)
+      // 목록 즉시 갱신
       _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
       state = state.copyWith(

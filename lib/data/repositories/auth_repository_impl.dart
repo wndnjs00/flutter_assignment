@@ -58,7 +58,6 @@ class AuthRepositoryImpl implements AuthRepository {
     await _storage.deleteAll();
   }
 
-  // secure storage에 유저 정보 있으면, 자동로그인 처리
   @override
   Future<User?> getCurrentUser() async {
     final email = await _storage.read(key: ApiConstants.userEmailKey);

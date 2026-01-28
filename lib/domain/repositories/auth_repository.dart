@@ -14,5 +14,6 @@ abstract class AuthRepository {
 
   Future<User?> getCurrentUser();
 
+  // TODO: 삭제하기
   Future<bool> isLoggedIn();
 }

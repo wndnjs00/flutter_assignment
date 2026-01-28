@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_assignment/core/constants/api_constants.dart';
 import 'package:flutter_assignment/core/network/dio_client.dart';
-import 'package:flutter_assignment/data/models/auth/auth_response.dart';
+import 'package:flutter_assignment/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:flutter_assignment/data/models/auth/refresh_request.dart';
 import 'package:flutter_assignment/presentation/providers/auth_provider_bridge.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiInterceptor extends Interceptor {
   final FlutterSecureStorage _storage;
+  final AuthRemoteDataSource _authRemoteDataSource = AuthRemoteDataSource();
   bool _isRefreshing = false;
   final List<Function()> _retryQueue = [];
 
@@ -57,25 +59,9 @@ class ApiInterceptor extends Interceptor {
         return handler.next(err);
       }
 
-      // 반드시 "기존 DioClient" 사용 (인증 없이 호출)
-      final response = await DioClient.instanceWithoutAuth.post(
-        ApiConstants.refresh,
-        data: {'refreshToken': refreshToken},
+      final authResponse = await _authRemoteDataSource.refreshToken(
+        RefreshRequest(refreshToken: refreshToken),
       );
-
-      // RefreshToken 갱신 API도 401이면 RefreshToken도 만료된 것
-      if (response.statusCode == 401) {
-        await _storage.deleteAll();
-        AuthProviderBridge.forceLogout();
-        return handler.next(err);
-      }
-
-      // 응답 데이터를 AuthResponse 모델로 파싱
-      if (response.data is! Map<String, dynamic>) {
-        throw Exception('서버 응답 형식이 올바르지 않습니다');
-      }
-      
-      final authResponse = AuthResponse.fromJson(response.data);
       final newAccessToken = authResponse.accessToken;
       final newRefreshToken = authResponse.refreshToken;
 
@@ -120,19 +106,16 @@ class ApiInterceptor extends Interceptor {
 
   Future<Response> _retry(RequestOptions request) async {
     // FormData는 한 번 사용되면 finalized되어 재사용 불가
-    // 새 FormData를 생성해야 함
     dynamic requestData = request.data;
     
     if (requestData is FormData) {
       // FormData를 새로 생성
       final newFormData = FormData();
       
-      // fields 복사
       for (final field in requestData.fields) {
         newFormData.fields.add(MapEntry(field.key, field.value));
       }
       
-      // files 복사 (MultipartFile은 재사용 가능)
       for (final file in requestData.files) {
         newFormData.files.add(MapEntry(file.key, file.value));
       }
