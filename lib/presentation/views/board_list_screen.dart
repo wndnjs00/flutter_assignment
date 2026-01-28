@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/like_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +24,12 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    
+    // 화면 진입 시 좋아요 및 내 게시글 상태 새로고침
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(likeViewModelProvider.notifier).refresh();
+      ref.read(myPostsViewModelProvider.notifier).refresh();
+    });
   }
 
   @override

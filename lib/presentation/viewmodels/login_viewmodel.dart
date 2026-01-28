@@ -1,5 +1,7 @@
 import 'package:flutter_assignment/presentation/providers/auth_provider.dart';
 import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/like_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_assignment/domain/repositories/auth_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -31,6 +33,10 @@ class LoginViewModel extends StateNotifier<LoginState> {
       );
 
       _ref.read(authViewModelProvider.notifier).setUser(user);
+
+      // 로그인 성공 시 좋아요 및 내 게시글 상태 새로고침
+      _ref.read(likeViewModelProvider.notifier).refresh();
+      _ref.read(myPostsViewModelProvider.notifier).refresh();
 
       state = const LoginState(isSuccess: true);
     } catch (e) {

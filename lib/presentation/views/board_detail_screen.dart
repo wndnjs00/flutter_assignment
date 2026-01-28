@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_assignment/data/datasources/local/local_storage_service.dart';
 import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_detail_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/api_constants.dart';
-
-final localStorageProvider = Provider((ref) => LocalStorageService());
 
 class BoardDetailScreen extends ConsumerStatefulWidget {
   final int boardId;
@@ -30,15 +28,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
   String _formatDate(DateTime date) {
     return DateFormat('yyyy-MM-dd HH:mm').format(date);
-  }
-
-  bool _isMyPost() {
-    final authState = ref.read(authViewModelProvider);
-    final userEmail = authState.user?.email;
-
-    if (userEmail == null) return false;
-
-    return ref.read(localStorageProvider).isMyPost(userEmail, widget.boardId);
   }
 
   Future<void> _deleteBoard(BuildContext context, WidgetRef ref) async {
@@ -91,13 +80,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
       if (context.mounted) {
         if (success) {
-          final authState = ref.read(authViewModelProvider);
-          final userEmail = authState.user?.email;
-
-          if (userEmail != null) {
-            // 로컬 저장소에서도 삭제
-            await ref.read(localStorageProvider).removeMyPost(userEmail, widget.boardId);
-          }
+          // 내가 작성한 게시글 상태에서도 삭제
+          await ref.read(myPostsViewModelProvider.notifier).removeMyPost(widget.boardId);
 
           ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
@@ -132,7 +116,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardDetailViewModelProvider(widget.boardId));
-    final isMyPost = _isMyPost();
+    final myPostsState = ref.watch(myPostsViewModelProvider);
+    final isMyPost = myPostsState.myPostIds.contains(widget.boardId);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,

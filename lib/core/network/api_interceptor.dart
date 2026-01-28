@@ -62,7 +62,7 @@ class ApiInterceptor extends Interceptor {
       if (response.data is! Map<String, dynamic>) {
         throw Exception('서버 응답 형식이 올바르지 않습니다');
       }
-
+      
       final authResponse = AuthResponse.fromJson(response.data);
       final newAccessToken = authResponse.accessToken;
       final newRefreshToken = authResponse.refreshToken;
@@ -97,24 +97,24 @@ class ApiInterceptor extends Interceptor {
     // FormData는 한 번 사용되면 finalized되어 재사용 불가
     // 새 FormData를 생성해야 함
     dynamic requestData = request.data;
-
+    
     if (requestData is FormData) {
       // FormData를 새로 생성
       final newFormData = FormData();
-
+      
       // fields 복사
       for (final field in requestData.fields) {
         newFormData.fields.add(MapEntry(field.key, field.value));
       }
-
+      
       // files 복사 (MultipartFile은 재사용 가능)
       for (final file in requestData.files) {
         newFormData.files.add(MapEntry(file.key, file.value));
       }
-
+      
       requestData = newFormData;
     }
-
+    
     return DioClient.instance.request(
       request.path,
       data: requestData,
