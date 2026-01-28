@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_assignment/domain/repositories/board_repository.dart';
 import 'package:flutter_assignment/presentation/providers/board_provider.dart';
+import 'package:flutter_assignment/presentation/viewmodels/board_detail_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -118,6 +120,8 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
 
       // 내가 작성한 게시글 상태 업데이트
       await _ref.read(myPostsViewModelProvider.notifier).addMyPost(boardId);
+      // 목록 즉시 갱신(방금 작성한 글이 바로 보이도록)
+      _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
       state = state.copyWith(
         isLoading: false,
@@ -160,6 +164,12 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
         category: category,
         image: image,
       );
+
+      // 수정된 상세 데이터를 즉시 반영(디테일 화면에서 바로 업데이트되도록)
+      final updatedBoard = await _boardRepository.getDetailBoard(id);
+      _ref.read(boardDetailViewModelProvider(id).notifier).updateBoard(updatedBoard);
+      // 목록도 즉시 갱신(리스트에서 제목 등이 바로 바뀌도록)
+      _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
       state = state.copyWith(
         isLoading: false,

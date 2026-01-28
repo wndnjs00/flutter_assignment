@@ -179,7 +179,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: InputDecoration(
                   labelText: '카테고리',
                   filled: true,
