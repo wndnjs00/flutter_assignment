@@ -4,7 +4,7 @@ import 'package:flutter_assignment/presentation/views/board_form_screen.dart';
 import 'package:flutter_assignment/presentation/views/board_list_screen.dart';
 import 'package:flutter_assignment/presentation/views/login_screen.dart';
 import 'package:flutter_assignment/presentation/views/main_screen.dart';
-import 'package:flutter_assignment/presentation/views/mypage_screen.dart';
+import 'package:flutter_assignment/presentation/views/mypage/mypage_screen.dart';
 import 'package:flutter_assignment/presentation/views/signup_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

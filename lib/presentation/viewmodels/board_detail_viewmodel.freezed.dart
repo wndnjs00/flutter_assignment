@@ -19,6 +19,8 @@ mixin _$BoardDetailState {
   Board? get board => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
+  bool get isDeleting => throw _privateConstructorUsedError;
+  bool get deleteSuccess => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $BoardDetailStateCopyWith<BoardDetailState> get copyWith =>
@@ -31,7 +33,12 @@ abstract class $BoardDetailStateCopyWith<$Res> {
           BoardDetailState value, $Res Function(BoardDetailState) then) =
       _$BoardDetailStateCopyWithImpl<$Res, BoardDetailState>;
   @useResult
-  $Res call({Board? board, bool isLoading, String? error});
+  $Res call(
+      {Board? board,
+      bool isLoading,
+      String? error,
+      bool isDeleting,
+      bool deleteSuccess});
 
   $BoardCopyWith<$Res>? get board;
 }
@@ -52,6 +59,8 @@ class _$BoardDetailStateCopyWithImpl<$Res, $Val extends BoardDetailState>
     Object? board = freezed,
     Object? isLoading = null,
     Object? error = freezed,
+    Object? isDeleting = null,
+    Object? deleteSuccess = null,
   }) {
     return _then(_value.copyWith(
       board: freezed == board
@@ -66,6 +75,14 @@ class _$BoardDetailStateCopyWithImpl<$Res, $Val extends BoardDetailState>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
+      isDeleting: null == isDeleting
+          ? _value.isDeleting
+          : isDeleting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      deleteSuccess: null == deleteSuccess
+          ? _value.deleteSuccess
+          : deleteSuccess // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -90,7 +107,12 @@ abstract class _$$BoardDetailStateImplCopyWith<$Res>
       __$$BoardDetailStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Board? board, bool isLoading, String? error});
+  $Res call(
+      {Board? board,
+      bool isLoading,
+      String? error,
+      bool isDeleting,
+      bool deleteSuccess});
 
   @override
   $BoardCopyWith<$Res>? get board;
@@ -110,6 +132,8 @@ class __$$BoardDetailStateImplCopyWithImpl<$Res>
     Object? board = freezed,
     Object? isLoading = null,
     Object? error = freezed,
+    Object? isDeleting = null,
+    Object? deleteSuccess = null,
   }) {
     return _then(_$BoardDetailStateImpl(
       board: freezed == board
@@ -124,6 +148,14 @@ class __$$BoardDetailStateImplCopyWithImpl<$Res>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
+      isDeleting: null == isDeleting
+          ? _value.isDeleting
+          : isDeleting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      deleteSuccess: null == deleteSuccess
+          ? _value.deleteSuccess
+          : deleteSuccess // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -132,7 +164,11 @@ class __$$BoardDetailStateImplCopyWithImpl<$Res>
 
 class _$BoardDetailStateImpl implements _BoardDetailState {
   const _$BoardDetailStateImpl(
-      {this.board, this.isLoading = false, this.error});
+      {this.board,
+      this.isLoading = false,
+      this.error,
+      this.isDeleting = false,
+      this.deleteSuccess = false});
 
   @override
   final Board? board;
@@ -141,10 +177,16 @@ class _$BoardDetailStateImpl implements _BoardDetailState {
   final bool isLoading;
   @override
   final String? error;
+  @override
+  @JsonKey()
+  final bool isDeleting;
+  @override
+  @JsonKey()
+  final bool deleteSuccess;
 
   @override
   String toString() {
-    return 'BoardDetailState(board: $board, isLoading: $isLoading, error: $error)';
+    return 'BoardDetailState(board: $board, isLoading: $isLoading, error: $error, isDeleting: $isDeleting, deleteSuccess: $deleteSuccess)';
   }
 
   @override
@@ -155,11 +197,16 @@ class _$BoardDetailStateImpl implements _BoardDetailState {
             (identical(other.board, board) || other.board == board) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
-            (identical(other.error, error) || other.error == error));
+            (identical(other.error, error) || other.error == error) &&
+            (identical(other.isDeleting, isDeleting) ||
+                other.isDeleting == isDeleting) &&
+            (identical(other.deleteSuccess, deleteSuccess) ||
+                other.deleteSuccess == deleteSuccess));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, board, isLoading, error);
+  int get hashCode => Object.hash(
+      runtimeType, board, isLoading, error, isDeleting, deleteSuccess);
 
   @JsonKey(ignore: true)
   @override
@@ -173,7 +220,9 @@ abstract class _BoardDetailState implements BoardDetailState {
   const factory _BoardDetailState(
       {final Board? board,
       final bool isLoading,
-      final String? error}) = _$BoardDetailStateImpl;
+      final String? error,
+      final bool isDeleting,
+      final bool deleteSuccess}) = _$BoardDetailStateImpl;
 
   @override
   Board? get board;
@@ -181,6 +230,10 @@ abstract class _BoardDetailState implements BoardDetailState {
   bool get isLoading;
   @override
   String? get error;
+  @override
+  bool get isDeleting;
+  @override
+  bool get deleteSuccess;
   @override
   @JsonKey(ignore: true)
   _$$BoardDetailStateImplCopyWith<_$BoardDetailStateImpl> get copyWith =>

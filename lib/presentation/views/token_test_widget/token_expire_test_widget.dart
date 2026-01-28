@@ -5,11 +5,11 @@ import 'package:flutter_assignment/core/constants/api_constants.dart';
 /* 토큰 만료 테스트 전용 위젯
 AccessToken / RefreshToken 만료 상황을 수동으로 만들어 테스트하기 위해 구현 */
 
-/*🔐 토큰 만료 테스트 시나리오
+/* 🔐 토큰 만료 테스트 시나리오
 - 먼저 mypage_screen에 있는 TokenExpireTestWidget() 주석을 제거해주세요
 
 시나리오 1
-1. RefreshToken + AccessToken 모두 만료 경우 테스트
+1. RefreshToken + AccessToken 모두 만료된 경우 테스트
 - RefreshToken 만료 버튼 클릭
 - AccessToken 만료 버튼 클릭
 - 커뮤니티 탭 이동 후 위로 스와이프
@@ -20,7 +20,7 @@ AccessToken / RefreshToken 만료 상황을 수동으로 만들어 테스트하�
 2. AccessToken만 만료된 경우 테스트
 - AccessToken 만료 버튼 클릭
 - 커뮤니티 탭 이동 후 위로 스와이프
-→ RefreshToken으로 AccessToken 자동 갱신 (로그아웃 없음)*/
+→ RefreshToken으로 AccessToken 자동 갱신 (로그아웃 없음) */
 
 
 class TokenExpireTestWidget extends StatelessWidget {

@@ -1,6 +1,8 @@
 import 'package:flutter_assignment/domain/entities/board/board.dart';
 import 'package:flutter_assignment/domain/repositories/board_repository.dart';
 import 'package:flutter_assignment/presentation/providers/board_provider.dart';
+import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
+import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,14 +14,17 @@ class BoardDetailState with _$BoardDetailState {
     Board? board,
     @Default(false) bool isLoading,
     String? error,
+    @Default(false) bool isDeleting,
+    @Default(false) bool deleteSuccess,
   }) = _BoardDetailState;
 }
 
 class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
   final BoardRepository _boardRepository;
   final int boardId;
+  final Ref _ref;
 
-  BoardDetailViewModel(this._boardRepository, this.boardId)
+  BoardDetailViewModel(this._boardRepository, this.boardId, this._ref)
       : super(BoardDetailState()) {
     loadBoard();
   }
@@ -35,13 +40,19 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     }
   }
 
-  Future<bool> deleteBoard() async {
+  Future<void> deleteBoard() async {
+    state = state.copyWith(isDeleting: true, error: null, deleteSuccess: false);
+
     try {
       await _boardRepository.deleteBoard(boardId);
-      return true;
+      
+      // 삭제 성공 후 관련 상태 업데이트
+      await _ref.read(myPostsViewModelProvider.notifier).removeMyPost(boardId);
+      _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
+      
+      state = state.copyWith(isDeleting: false, deleteSuccess: true);
     } catch (e) {
-      state = state.copyWith(error: e.toString());
-      return false;
+      state = state.copyWith(isDeleting: false, error: e.toString(), deleteSuccess: false);
     }
   }
 
@@ -53,6 +64,10 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
   void clearError() {
     state = state.copyWith(error: null);
   }
+
+  void clearDeleteSuccess() {
+    state = state.copyWith(deleteSuccess: false);
+  }
 }
 
 final boardDetailViewModelProvider =
@@ -60,5 +75,5 @@ StateNotifierProvider.family<BoardDetailViewModel, BoardDetailState, int>((
     ref,
     boardId,
     ) {
-  return BoardDetailViewModel(ref.read(boardRepositoryProvider), boardId);
+  return BoardDetailViewModel(ref.read(boardRepositoryProvider), boardId, ref);
 });

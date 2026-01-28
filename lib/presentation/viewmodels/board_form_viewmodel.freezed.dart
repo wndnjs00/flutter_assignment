@@ -19,6 +19,14 @@ mixin _$BoardFormState {
   bool get isLoading => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   String? get successMessage => throw _privateConstructorUsedError;
+  bool get shouldNavigate => throw _privateConstructorUsedError;
+  int? get createdBoardId => throw _privateConstructorUsedError;
+  int? get updatedBoardId => throw _privateConstructorUsedError;
+  bool get isLoadingInitialData => throw _privateConstructorUsedError;
+  String? get initialTitle => throw _privateConstructorUsedError;
+  String? get initialContent => throw _privateConstructorUsedError;
+  String? get initialCategory => throw _privateConstructorUsedError;
+  String? get initialImageUrl => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $BoardFormStateCopyWith<BoardFormState> get copyWith =>
@@ -31,7 +39,18 @@ abstract class $BoardFormStateCopyWith<$Res> {
           BoardFormState value, $Res Function(BoardFormState) then) =
       _$BoardFormStateCopyWithImpl<$Res, BoardFormState>;
   @useResult
-  $Res call({bool isLoading, String? error, String? successMessage});
+  $Res call(
+      {bool isLoading,
+      String? error,
+      String? successMessage,
+      bool shouldNavigate,
+      int? createdBoardId,
+      int? updatedBoardId,
+      bool isLoadingInitialData,
+      String? initialTitle,
+      String? initialContent,
+      String? initialCategory,
+      String? initialImageUrl});
 }
 
 /// @nodoc
@@ -50,6 +69,14 @@ class _$BoardFormStateCopyWithImpl<$Res, $Val extends BoardFormState>
     Object? isLoading = null,
     Object? error = freezed,
     Object? successMessage = freezed,
+    Object? shouldNavigate = null,
+    Object? createdBoardId = freezed,
+    Object? updatedBoardId = freezed,
+    Object? isLoadingInitialData = null,
+    Object? initialTitle = freezed,
+    Object? initialContent = freezed,
+    Object? initialCategory = freezed,
+    Object? initialImageUrl = freezed,
   }) {
     return _then(_value.copyWith(
       isLoading: null == isLoading
@@ -64,6 +91,38 @@ class _$BoardFormStateCopyWithImpl<$Res, $Val extends BoardFormState>
           ? _value.successMessage
           : successMessage // ignore: cast_nullable_to_non_nullable
               as String?,
+      shouldNavigate: null == shouldNavigate
+          ? _value.shouldNavigate
+          : shouldNavigate // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdBoardId: freezed == createdBoardId
+          ? _value.createdBoardId
+          : createdBoardId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      updatedBoardId: freezed == updatedBoardId
+          ? _value.updatedBoardId
+          : updatedBoardId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      isLoadingInitialData: null == isLoadingInitialData
+          ? _value.isLoadingInitialData
+          : isLoadingInitialData // ignore: cast_nullable_to_non_nullable
+              as bool,
+      initialTitle: freezed == initialTitle
+          ? _value.initialTitle
+          : initialTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      initialContent: freezed == initialContent
+          ? _value.initialContent
+          : initialContent // ignore: cast_nullable_to_non_nullable
+              as String?,
+      initialCategory: freezed == initialCategory
+          ? _value.initialCategory
+          : initialCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      initialImageUrl: freezed == initialImageUrl
+          ? _value.initialImageUrl
+          : initialImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -76,7 +135,18 @@ abstract class _$$BoardFormStateImplCopyWith<$Res>
       __$$BoardFormStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool isLoading, String? error, String? successMessage});
+  $Res call(
+      {bool isLoading,
+      String? error,
+      String? successMessage,
+      bool shouldNavigate,
+      int? createdBoardId,
+      int? updatedBoardId,
+      bool isLoadingInitialData,
+      String? initialTitle,
+      String? initialContent,
+      String? initialCategory,
+      String? initialImageUrl});
 }
 
 /// @nodoc
@@ -93,6 +163,14 @@ class __$$BoardFormStateImplCopyWithImpl<$Res>
     Object? isLoading = null,
     Object? error = freezed,
     Object? successMessage = freezed,
+    Object? shouldNavigate = null,
+    Object? createdBoardId = freezed,
+    Object? updatedBoardId = freezed,
+    Object? isLoadingInitialData = null,
+    Object? initialTitle = freezed,
+    Object? initialContent = freezed,
+    Object? initialCategory = freezed,
+    Object? initialImageUrl = freezed,
   }) {
     return _then(_$BoardFormStateImpl(
       isLoading: null == isLoading
@@ -107,6 +185,38 @@ class __$$BoardFormStateImplCopyWithImpl<$Res>
           ? _value.successMessage
           : successMessage // ignore: cast_nullable_to_non_nullable
               as String?,
+      shouldNavigate: null == shouldNavigate
+          ? _value.shouldNavigate
+          : shouldNavigate // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdBoardId: freezed == createdBoardId
+          ? _value.createdBoardId
+          : createdBoardId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      updatedBoardId: freezed == updatedBoardId
+          ? _value.updatedBoardId
+          : updatedBoardId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      isLoadingInitialData: null == isLoadingInitialData
+          ? _value.isLoadingInitialData
+          : isLoadingInitialData // ignore: cast_nullable_to_non_nullable
+              as bool,
+      initialTitle: freezed == initialTitle
+          ? _value.initialTitle
+          : initialTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      initialContent: freezed == initialContent
+          ? _value.initialContent
+          : initialContent // ignore: cast_nullable_to_non_nullable
+              as String?,
+      initialCategory: freezed == initialCategory
+          ? _value.initialCategory
+          : initialCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      initialImageUrl: freezed == initialImageUrl
+          ? _value.initialImageUrl
+          : initialImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -115,7 +225,17 @@ class __$$BoardFormStateImplCopyWithImpl<$Res>
 
 class _$BoardFormStateImpl implements _BoardFormState {
   const _$BoardFormStateImpl(
-      {this.isLoading = false, this.error, this.successMessage});
+      {this.isLoading = false,
+      this.error,
+      this.successMessage,
+      this.shouldNavigate = false,
+      this.createdBoardId,
+      this.updatedBoardId,
+      this.isLoadingInitialData = false,
+      this.initialTitle,
+      this.initialContent,
+      this.initialCategory,
+      this.initialImageUrl});
 
   @override
   @JsonKey()
@@ -124,10 +244,28 @@ class _$BoardFormStateImpl implements _BoardFormState {
   final String? error;
   @override
   final String? successMessage;
+  @override
+  @JsonKey()
+  final bool shouldNavigate;
+  @override
+  final int? createdBoardId;
+  @override
+  final int? updatedBoardId;
+  @override
+  @JsonKey()
+  final bool isLoadingInitialData;
+  @override
+  final String? initialTitle;
+  @override
+  final String? initialContent;
+  @override
+  final String? initialCategory;
+  @override
+  final String? initialImageUrl;
 
   @override
   String toString() {
-    return 'BoardFormState(isLoading: $isLoading, error: $error, successMessage: $successMessage)';
+    return 'BoardFormState(isLoading: $isLoading, error: $error, successMessage: $successMessage, shouldNavigate: $shouldNavigate, createdBoardId: $createdBoardId, updatedBoardId: $updatedBoardId, isLoadingInitialData: $isLoadingInitialData, initialTitle: $initialTitle, initialContent: $initialContent, initialCategory: $initialCategory, initialImageUrl: $initialImageUrl)';
   }
 
   @override
@@ -139,12 +277,39 @@ class _$BoardFormStateImpl implements _BoardFormState {
                 other.isLoading == isLoading) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.successMessage, successMessage) ||
-                other.successMessage == successMessage));
+                other.successMessage == successMessage) &&
+            (identical(other.shouldNavigate, shouldNavigate) ||
+                other.shouldNavigate == shouldNavigate) &&
+            (identical(other.createdBoardId, createdBoardId) ||
+                other.createdBoardId == createdBoardId) &&
+            (identical(other.updatedBoardId, updatedBoardId) ||
+                other.updatedBoardId == updatedBoardId) &&
+            (identical(other.isLoadingInitialData, isLoadingInitialData) ||
+                other.isLoadingInitialData == isLoadingInitialData) &&
+            (identical(other.initialTitle, initialTitle) ||
+                other.initialTitle == initialTitle) &&
+            (identical(other.initialContent, initialContent) ||
+                other.initialContent == initialContent) &&
+            (identical(other.initialCategory, initialCategory) ||
+                other.initialCategory == initialCategory) &&
+            (identical(other.initialImageUrl, initialImageUrl) ||
+                other.initialImageUrl == initialImageUrl));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isLoading, error, successMessage);
+  int get hashCode => Object.hash(
+      runtimeType,
+      isLoading,
+      error,
+      successMessage,
+      shouldNavigate,
+      createdBoardId,
+      updatedBoardId,
+      isLoadingInitialData,
+      initialTitle,
+      initialContent,
+      initialCategory,
+      initialImageUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -158,7 +323,15 @@ abstract class _BoardFormState implements BoardFormState {
   const factory _BoardFormState(
       {final bool isLoading,
       final String? error,
-      final String? successMessage}) = _$BoardFormStateImpl;
+      final String? successMessage,
+      final bool shouldNavigate,
+      final int? createdBoardId,
+      final int? updatedBoardId,
+      final bool isLoadingInitialData,
+      final String? initialTitle,
+      final String? initialContent,
+      final String? initialCategory,
+      final String? initialImageUrl}) = _$BoardFormStateImpl;
 
   @override
   bool get isLoading;
@@ -166,6 +339,22 @@ abstract class _BoardFormState implements BoardFormState {
   String? get error;
   @override
   String? get successMessage;
+  @override
+  bool get shouldNavigate;
+  @override
+  int? get createdBoardId;
+  @override
+  int? get updatedBoardId;
+  @override
+  bool get isLoadingInitialData;
+  @override
+  String? get initialTitle;
+  @override
+  String? get initialContent;
+  @override
+  String? get initialCategory;
+  @override
+  String? get initialImageUrl;
   @override
   @JsonKey(ignore: true)
   _$$BoardFormStateImplCopyWith<_$BoardFormStateImpl> get copyWith =>

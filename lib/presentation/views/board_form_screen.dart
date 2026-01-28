@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:flutter_assignment/presentation/viewmodels/board_detail_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_form_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +26,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
   File? _selectedImage;
   String? _existingImageUrl;
   final ImagePicker _picker = ImagePicker();
-  bool _isLoading = false;
 
   bool get isEditMode => widget.boardId != null;
 
@@ -35,7 +33,12 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
   void initState() {
     super.initState();
     if (isEditMode) {
-      _loadBoard();
+      // 초기 데이터 로딩은 ViewModel에서 수행
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref
+            .read(boardFormViewModelProvider.notifier)
+            .loadInitialData(boardId: widget.boardId!);
+      });
     }
   }
 
@@ -44,29 +47,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadBoard() async {
-    setState(() => _isLoading = true);
-
-    final boardState = ref.read(boardDetailViewModelProvider(widget.boardId!));
-
-    if (boardState.board == null) {
-      await ref
-          .read(boardDetailViewModelProvider(widget.boardId!).notifier)
-          .loadBoard();
-    }
-
-    final board = ref.read(boardDetailViewModelProvider(widget.boardId!)).board;
-
-    if (board != null) {
-      _titleController.text = board.title;
-      _contentController.text = board.content;
-      _selectedCategory = board.category;
-      _existingImageUrl = board.imageUrl;
-    }
-
-    setState(() => _isLoading = false);
   }
 
   Future<void> _pickImage() async {
@@ -98,80 +78,78 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
 
     final authState = ref.read(authViewModelProvider);
     final userEmail = authState.user?.email;
-
-    if (userEmail == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('로그인 정보를 찾을 수 없습니다'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    final success = isEditMode
-        ? await ref.read(boardFormViewModelProvider.notifier).updateBoard(
-      id: widget.boardId!,
-      title: _titleController.text.trim(),
-      content: _contentController.text.trim(),
-      category: _selectedCategory!,
-      image: _selectedImage,
-    )
-        : await ref.read(boardFormViewModelProvider.notifier).createBoard(
-      userEmail: userEmail,
-      title: _titleController.text.trim(),
-      content: _contentController.text.trim(),
-      category: _selectedCategory!,
-      image: _selectedImage,
-    );
-
-    if (!mounted) return;
-
-    if (success) {
-      // 커뮤니티 목록 새로고침
-      ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
-
-      // 수정 모드인 경우 상세 페이지도 새로고침
-      if (isEditMode) {
-        await ref
-            .read(boardDetailViewModelProvider(widget.boardId!).notifier)
-            .loadBoard();
-      }
-
-      final message = ref.read(boardFormViewModelProvider).successMessage;
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message ?? '완료되었습니다'),
-            backgroundColor: Colors.green,
-          ),
+    await ref.read(boardFormViewModelProvider.notifier).submit(
+          isEditMode: isEditMode,
+          boardId: widget.boardId,
+          userEmail: userEmail,
+          title: _titleController.text.trim(),
+          content: _contentController.text.trim(),
+          category: _selectedCategory!,
+          image: _selectedImage,
         );
-
-        ref.read(boardFormViewModelProvider.notifier).clearMessages();
-
-        // 수정 시에는 상세 페이지로, 생성 시에는 목록으로
-        if (isEditMode) {
-          context.go('/board/${widget.boardId}');
-        } else {
-          context.go('/');
-        }
-      }
-    } else {
-      final error = ref.read(boardFormViewModelProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error ?? '작업에 실패했습니다'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      ref.read(boardFormViewModelProvider.notifier).clearMessages();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(boardFormViewModelProvider);
     final categories = ref.watch(boardListViewModelProvider).categories;
+
+    // 성공/실패 상태 감지
+    ref.listen<BoardFormState>(
+      boardFormViewModelProvider,
+      (previous, next) {
+        // 초기 데이터(수정 모드) 주입: 화면은 상태를 반영만 한다.
+        final initialChanged =
+            (previous?.initialTitle != next.initialTitle) ||
+                (previous?.initialContent != next.initialContent) ||
+                (previous?.initialCategory != next.initialCategory) ||
+                (previous?.initialImageUrl != next.initialImageUrl);
+
+        if (isEditMode && initialChanged && !next.isLoadingInitialData) {
+          if (next.initialTitle != null) _titleController.text = next.initialTitle!;
+          if (next.initialContent != null) _contentController.text = next.initialContent!;
+          if (mounted) {
+            setState(() {
+              _selectedCategory = next.initialCategory;
+              _existingImageUrl = next.initialImageUrl;
+            });
+          }
+        }
+
+        if (previous?.shouldNavigate != next.shouldNavigate && next.shouldNavigate) {
+          final message = next.successMessage;
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message ?? '완료되었습니다'),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            ref.read(boardFormViewModelProvider.notifier).clearMessages();
+
+            // 수정 시에는 상세 페이지로, 생성 시에는 목록으로
+            if (isEditMode && next.updatedBoardId != null) {
+              context.go('/board/${next.updatedBoardId}');
+            } else if (!isEditMode && next.createdBoardId != null) {
+              context.go('/');
+            }
+          }
+        }
+        
+        if (previous?.error != next.error && next.error != null && !next.isLoading) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(next.error ?? '작업에 실패했습니다'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            ref.read(boardFormViewModelProvider.notifier).clearMessages();
+          }
+        }
+      },
+    );
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -191,7 +169,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: _isLoading
+      body: formState.isLoadingInitialData
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

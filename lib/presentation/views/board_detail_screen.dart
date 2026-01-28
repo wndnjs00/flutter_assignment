@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:flutter_assignment/presentation/providers/board_selectors.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_detail_viewmodel.dart';
-import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
-import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import '../../../core/constants/api_constants.dart';
 
 class BoardDetailScreen extends ConsumerStatefulWidget {
@@ -21,103 +18,54 @@ class BoardDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
-  String _getCategoryName(String categoryKey, WidgetRef ref) {
-    final categories = ref.read(boardListViewModelProvider).categories;
-    return categories[categoryKey] ?? categoryKey;
-  }
-
-  String _formatDate(DateTime date) {
-    return DateFormat('yyyy-MM-dd HH:mm').format(date);
-  }
-
-  Future<void> _deleteBoard(BuildContext context, WidgetRef ref) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          '게시글 삭제',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
-        ),
-        content: const Text(
-          '이 게시글을 삭제하시겠습니까?',
-          style: TextStyle(fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              '취소',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              '삭제',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      final success = await ref
-          .read(boardDetailViewModelProvider(widget.boardId).notifier)
-          .deleteBoard();
-
-      if (context.mounted) {
-        if (success) {
-          // 내가 작성한 게시글 상태에서도 삭제
-          await ref.read(myPostsViewModelProvider.notifier).removeMyPost(widget.boardId);
-
-          ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('게시글이 삭제되었습니다'),
-              backgroundColor: Colors.green.shade600,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          );
-          context.go('/');
-        } else {
-          final error = ref.read(boardDetailViewModelProvider(widget.boardId)).error;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error ?? '삭제에 실패했습니다'),
-              backgroundColor: Colors.red.shade600,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          );
-        }
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardDetailViewModelProvider(widget.boardId));
-    final myPostsState = ref.watch(myPostsViewModelProvider);
-    final isMyPost = myPostsState.myPostIds.contains(widget.boardId);
+    final isMyPost = ref.watch(isMyPostSelectorProvider(widget.boardId));
+
+    // 삭제 성공/실패 감지
+    ref.listen<BoardDetailState>(
+      boardDetailViewModelProvider(widget.boardId),
+      (previous, next) {
+        if (previous?.deleteSuccess != next.deleteSuccess && next.deleteSuccess) {
+          ref.read(boardDetailViewModelProvider(widget.boardId).notifier).clearDeleteSuccess();
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('게시글이 삭제되었습니다'),
+                backgroundColor: Colors.green.shade600,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            );
+            context.go('/');
+          }
+        }
+        
+        if (previous?.error != next.error && 
+            next.error != null && 
+            !next.isDeleting && 
+            !next.deleteSuccess) {
+          ref.read(boardDetailViewModelProvider(widget.boardId).notifier).clearError();
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(next.error!),
+                backgroundColor: Colors.red.shade600,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            );
+          }
+        }
+      },
+    );
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -148,14 +96,16 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             IconButton(
               icon: Icon(Icons.delete_outline, color: Colors.red.shade400),
               tooltip: '삭제',
-              onPressed: () => _deleteBoard(context, ref),
+              onPressed: boardState.isDeleting
+                  ? null
+                  : () => _showDeleteDialog(context),
             ),
           ],
         ],
       ),
       body: boardState.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : boardState.error != null
+          : boardState.error != null && !boardState.isDeleting
           ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -240,10 +190,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          _getCategoryName(
-                            boardState.board!.category,
-                            ref,
-                          ),
+                          ref.watch(categoryNameSelectorProvider(boardState.board!.category)),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -260,7 +207,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _formatDate(boardState.board!.createdAt),
+                        ref.watch(formattedDateSelectorProvider(boardState.board!.createdAt)),
                         style: TextStyle(
                           color: Colors.grey.shade500,
                           fontSize: 12,
@@ -368,5 +315,53 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         ),
       ),
     );
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          '게시글 삭제',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
+        content: const Text(
+          '이 게시글을 삭제하시겠습니까?',
+          style: TextStyle(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              '취소',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              '삭제',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).then((confirm) {
+      if (confirm == true) {
+        ref.read(boardDetailViewModelProvider(widget.boardId).notifier).deleteBoard();
+      }
+    });
   }
 }

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_assignment/presentation/providers/board_selectors.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/like_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import '../../../core/constants/api_constants.dart';
 
 class BoardListScreen extends ConsumerStatefulWidget {
   const BoardListScreen({super.key});
@@ -17,8 +16,6 @@ class BoardListScreen extends ConsumerStatefulWidget {
 class _BoardListScreenState extends ConsumerState<BoardListScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  String _selectedCategoryFilter = 'ALL';
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -52,35 +49,12 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
         .loadBoards(refresh: true);
   }
 
-  String _getCategoryName(String categoryKey) {
-    final categories = ref.read(boardListViewModelProvider).categories;
-    return categories[categoryKey] ?? categoryKey;
-  }
-
-  String _formatDate(DateTime date) {
-    return DateFormat('yyyy-MM-dd HH:mm').format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardListViewModelProvider);
     final likeState = ref.watch(likeViewModelProvider);
-
-    var filteredBoards = boardState.boards;
-
-    if (_selectedCategoryFilter != 'ALL') {
-      filteredBoards = filteredBoards
-          .where((board) => board.category == _selectedCategoryFilter)
-          .toList();
-    }
-
-    // 제목 검색
-    if (_searchQuery.isNotEmpty) {
-      filteredBoards = filteredBoards.where((board) {
-        final query = _searchQuery.toLowerCase();
-        return board.title.toLowerCase().contains(query);
-      }).toList();
-    }
+    final filteredBoards = ref.watch(filteredBoardsSelectorProvider);
+    final searchQuery = ref.watch(boardSearchQueryProvider);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -95,14 +69,12 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
               decoration: InputDecoration(
                 hintText: '제목 검색',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                suffixIcon: _searchQuery.isNotEmpty
+                suffixIcon: searchQuery.isNotEmpty
                     ? IconButton(
                   icon: const Icon(Icons.clear, color: Colors.grey),
                   onPressed: () {
-                    setState(() {
-                      _searchController.clear();
-                      _searchQuery = '';
-                    });
+                    _searchController.clear();
+                    ref.read(boardSearchQueryProvider.notifier).state = '';
                   },
                 )
                     : null,
@@ -115,9 +87,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
+                ref.read(boardSearchQueryProvider.notifier).state = value;
               },
             ),
           ),
@@ -182,7 +152,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                     Icon(Icons.article_outlined, size: 64, color: Colors.grey.shade300),
                     const SizedBox(height: 16),
                     Text(
-                      _searchQuery.isNotEmpty
+                      searchQuery.isNotEmpty
                           ? '검색 결과가 없습니다'
                           : '등록된 게시글이 없습니다',
                       style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
@@ -259,7 +229,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
-                                      _getCategoryName(board.category),
+                                      ref.watch(categoryNameSelectorProvider(board.category)),
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
@@ -276,7 +246,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                                       Icon(Icons.access_time, size: 12, color: Colors.grey.shade400),
                                       const SizedBox(width: 4),
                                       Text(
-                                        _formatDate(board.createdAt),
+                                        ref.watch(formattedDateSelectorProvider(board.createdAt)),
                                         style: TextStyle(
                                           fontSize: 11,
                                           color: Colors.grey.shade500,
@@ -327,17 +297,15 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
   }
 
   Widget _buildCategoryChip(String value, String label) {
-    final isSelected = _selectedCategoryFilter == value;
+    final isSelected = ref.watch(boardCategoryFilterProvider) == value;
     return FilterChip(
       label: Text(label),
       selected: isSelected,
       onSelected: (selected) {
-        setState(() {
-          _selectedCategoryFilter = value;
-        });
+        ref.read(boardCategoryFilterProvider.notifier).state = value;
       },
       backgroundColor: Colors.grey.shade100,
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
       labelStyle: TextStyle(
         color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade700,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,

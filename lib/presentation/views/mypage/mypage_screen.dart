@@ -242,7 +242,6 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
       ),
     );
   }
-
   Widget _buildBoardCard(BuildContext context, WidgetRef ref, board) {
     return Material(
       color: Colors.white,
