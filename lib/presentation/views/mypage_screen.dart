@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_assignment/core/constants/api_constants.dart';
 import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/like_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/my_posts_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -111,6 +113,87 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 토큰 만료 테스트 버튼 (개발용)
+            // TODO: 따로 위젯으로 뺄것
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange.shade200),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '토큰 만료 테스트',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.orange.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            const storage = FlutterSecureStorage();
+                            // AccessToken을 만료된 값으로 변경 (임의의 잘못된 토큰)
+                            await storage.write(
+                              key: ApiConstants.accessTokenKey,
+                              value: 'expired_token_for_test',
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('AccessToken 만료 상태로 변경했습니다. 게시판 탭으로 이동해 테스트하세요.'),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.access_time, size: 18),
+                          label: const Text('AccessToken 만료'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.orange.shade700,
+                            side: BorderSide(color: Colors.orange.shade300),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            const storage = FlutterSecureStorage();
+                            // RefreshToken을 만료된 값으로 변경 (임의의 잘못된 토큰)
+                            await storage.write(
+                              key: ApiConstants.refreshTokenKey,
+                              value: 'expired_refresh_token_for_test',
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('RefreshToken을 만료 상태로 변경했습니다. 게시판 탭으로 이동해서 테스트해세요'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.refresh, size: 18),
+                          label: const Text('RefreshToken 만료'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red.shade700,
+                            side: BorderSide(color: Colors.red.shade300),
+                          ),
                         ),
                       ),
                     ],

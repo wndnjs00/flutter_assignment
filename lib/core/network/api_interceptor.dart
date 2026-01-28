@@ -50,13 +50,25 @@ class ApiInterceptor extends Interceptor {
       final refreshToken =
       await _storage.read(key: ApiConstants.refreshTokenKey);
 
-      if (refreshToken == null) throw Exception('No refresh token');
+      if (refreshToken == null) {
+        // RefreshToken이 없으면 로그아웃
+        await _storage.deleteAll();
+        AuthProviderBridge.forceLogout();
+        return handler.next(err);
+      }
 
-      // ⚠️ 반드시 "기존 DioClient" 사용
+      // 반드시 "기존 DioClient" 사용 (인증 없이 호출)
       final response = await DioClient.instanceWithoutAuth.post(
         ApiConstants.refresh,
         data: {'refreshToken': refreshToken},
       );
+
+      // RefreshToken 갱신 API도 401이면 RefreshToken도 만료된 것
+      if (response.statusCode == 401) {
+        await _storage.deleteAll();
+        AuthProviderBridge.forceLogout();
+        return handler.next(err);
+      }
 
       // 응답 데이터를 AuthResponse 모델로 파싱
       if (response.data is! Map<String, dynamic>) {
@@ -82,9 +94,22 @@ class ApiInterceptor extends Interceptor {
       }
       _retryQueue.clear();
 
+      // 원래 요청 재시도 (새 AccessToken으로)
       handler.resolve(await _retry(err.requestOptions));
+    } on DioException catch (e) {
+      // RefreshToken 갱신 API 호출 실패 (401 또는 네트워크 에러 등)
+      if (e.response?.statusCode == 401) {
+        // RefreshToken도 만료된 경우
+        await _storage.deleteAll();
+        AuthProviderBridge.forceLogout();
+        return handler.next(err);
+      }
+      // 다른 에러도 로그아웃 처리
+      await _storage.deleteAll();
+      AuthProviderBridge.forceLogout();
+      return handler.next(err);
     } catch (e) {
-      // 여기서 “진짜 로그아웃” 신호를 줘야 함
+      // 예상치 못한 에러
       await _storage.deleteAll();
       AuthProviderBridge.forceLogout();
       return handler.next(err);
@@ -115,13 +140,17 @@ class ApiInterceptor extends Interceptor {
       requestData = newFormData;
     }
     
+    // 헤더 복사 (Authorization 헤더는 제거 - onRequest에서 새 토큰으로 자동 추가됨)
+    final headers = Map<String, dynamic>.from(request.headers);
+    headers.remove('Authorization');
+    
     return DioClient.instance.request(
       request.path,
       data: requestData,
       queryParameters: request.queryParameters,
       options: Options(
         method: request.method,
-        headers: request.headers,
+        headers: headers,
       ),
     );
   }
