@@ -1,7 +1,7 @@
 import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:flutter_assignment/presentation/views/board_detail_screen.dart';
-import 'package:flutter_assignment/presentation/views/board_form_screen.dart';
-import 'package:flutter_assignment/presentation/views/board_list_screen.dart';
+import 'package:flutter_assignment/presentation/views/detail/board_detail_screen.dart';
+import 'package:flutter_assignment/presentation/views/form/board_form_screen.dart';
+import 'package:flutter_assignment/presentation/views/list/board_list_screen.dart';
 import 'package:flutter_assignment/presentation/views/login_screen.dart';
 import 'package:flutter_assignment/presentation/views/main_screen.dart';
 import 'package:flutter_assignment/presentation/views/mypage/mypage_screen.dart';

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_form_viewmodel.dart';
 import 'package:flutter_assignment/presentation/viewmodels/board_list_viewmodel.dart';
+import 'package:flutter_assignment/presentation/views/form/widgets/category_dropdown.dart';
+import 'package:flutter_assignment/presentation/views/form/widgets/title_text_field.dart';
+import 'package:flutter_assignment/presentation/views/form/widgets/content_text_field.dart';
+import 'package:flutter_assignment/presentation/views/form/widgets/image_picker_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../core/constants/api_constants.dart';
-import '../../../core/utils/validators.dart';
 
 class BoardFormScreen extends ConsumerStatefulWidget {
   final int? boardId;
@@ -29,7 +31,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
 
   bool get isEditMode => widget.boardId != null;
 
-  // 초기 데이터 로드 (수정 모드일 경우)
   @override
   void initState() {
     super.initState();
@@ -42,7 +43,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     }
   }
 
-  // 리소스 정리
   @override
   void dispose() {
     _titleController.dispose();
@@ -50,7 +50,6 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     super.dispose();
   }
 
-  // 갤러리에서 이미지 선택
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -179,182 +178,44 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DropdownButtonFormField<String>(
-                initialValue: _selectedCategory,
-                decoration: InputDecoration(
-                  labelText: '카테고리',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  prefixIcon: const Icon(Icons.category),
-                ),
-                items: categories.entries.map((entry) {
-                  return DropdownMenuItem(
-                    value: entry.key,
-                    child: Text(entry.value),
-                  );
-                }).toList(),
-                onChanged: formState.isLoading
-                    ? null
-                    : (value) {
+              CategoryDropdown(
+                selectedCategory: _selectedCategory,
+                categories: categories,
+                onChanged: (value) {
                   setState(() {
                     _selectedCategory = value;
                   });
                 },
-                validator: Validators.validateCategory,
+                isLoading: formState.isLoading,
               ),
               const SizedBox(height: 16),
-
-              TextFormField(
+              TitleTextField(
                 controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: '제목',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  prefixIcon: const Icon(Icons.title),
-                ),
-                validator: Validators.validateTitle,
-                enabled: !formState.isLoading,
-                maxLength: 100,
+                isLoading: formState.isLoading,
               ),
               const SizedBox(height: 16),
-
-              TextFormField(
+              ContentTextField(
                 controller: _contentController,
-                decoration: InputDecoration(
-                  labelText: '내용',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  alignLabelWithHint: true,
-                ),
-                maxLines: 10,
-                validator: Validators.validateContent,
-                enabled: !formState.isLoading,
+                isLoading: formState.isLoading,
               ),
               const SizedBox(height: 16),
-
-              const Text(
-                '이미지 (선택사항)',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              ImagePickerWidget(
+                selectedImage: _selectedImage,
+                existingImageUrl: _existingImageUrl,
+                isEditMode: isEditMode,
+                isLoading: formState.isLoading,
+                onPickImage: _pickImage,
+                onRemoveSelectedImage: () {
+                  setState(() {
+                    _selectedImage = null;
+                  });
+                },
+                onRemoveExistingImage: () {
+                  setState(() {
+                    _existingImageUrl = null;
+                  });
+                },
               ),
-              const SizedBox(height: 8),
-
-              if (_selectedImage != null)
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        _selectedImage!,
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: IconButton(
-                        icon: const Icon(Icons.close),
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.black54,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: formState.isLoading
-                            ? null
-                            : () {
-                          setState(() {
-                            _selectedImage = null;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                )
-              else if (_existingImageUrl != null && isEditMode)
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        '${ApiConstants.baseUrl}$_existingImageUrl',
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 200,
-                            color: Colors.grey[300],
-                            child: const Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                size: 64,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: IconButton(
-                        icon: const Icon(Icons.close),
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.black54,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: formState.isLoading
-                            ? null
-                            : () {
-                          setState(() {
-                            _existingImageUrl = null;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                )
-              else
-                OutlinedButton.icon(
-                  onPressed: formState.isLoading ? null : _pickImage,
-                  icon: const Icon(Icons.image),
-                  label: const Text('이미지 선택'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
               const SizedBox(height: 32),
 
               ElevatedButton(
