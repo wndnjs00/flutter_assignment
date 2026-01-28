@@ -1,0 +1,73 @@
+import 'package:flutter_assignment/core/constants/api_constants.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+class LocalStorageService {
+  static Future<void> init() async {
+    await Hive.initFlutter();
+    await Hive.openBox<int>(ApiConstants.likedPostsBoxName);
+    await Hive.openBox<int>(ApiConstants.myPostsBoxName);
+  }
+
+  // 좋아요한 게시글 (사용자별로 분리)
+  Box<int> get _likedBox => Hive.box<int>(ApiConstants.likedPostsBoxName);
+
+  String _getLikedKey(String userEmail, int postId) {
+    return '${userEmail}_$postId';
+  }
+
+  List<int> getLikedPosts(String userEmail) {
+    final allKeys = _likedBox.keys.toList();
+    final userKeys = allKeys
+        .where((key) => key.toString().startsWith('${userEmail}_'))
+        .toList();
+
+    return userKeys.map((key) {
+      final postId = key.toString().split('_').last;
+      return int.parse(postId);
+    }).toList();
+  }
+
+  bool isLiked(String userEmail, int postId) {
+    final key = _getLikedKey(userEmail, postId);
+    return _likedBox.containsKey(key);
+  }
+
+  Future<void> toggleLike(String userEmail, int postId) async {
+    final key = _getLikedKey(userEmail, postId);
+    if (isLiked(userEmail, postId)) {
+      await _likedBox.delete(key);
+    } else {
+      await _likedBox.put(key, postId);
+    }
+  }
+
+  // 내가 작성한 게시글 (사용자별로 분리)
+  Box<int> get _myPostsBox => Hive.box<int>(ApiConstants.myPostsBoxName);
+
+  String _getMyPostKey(String userEmail, int postId) {
+    return '${userEmail}_$postId';
+  }
+
+  List<int> getMyPosts(String userEmail) {
+    final allKeys = _myPostsBox.keys.toList();
+    final userKeys = allKeys
+        .where((key) => key.toString().startsWith('${userEmail}_'))
+        .toList();
+
+    return userKeys.map((key) {
+      final postId = key.toString().split('_').last;
+      return int.parse(postId);
+    }).toList();
+  }
+
+  Future<void> addMyPost(String userEmail, int postId) async {
+    final key = _getMyPostKey(userEmail, postId);
+    await _myPostsBox.put(key, postId);
+  }
+
+  Future<void> removeMyPost(String userEmail, int postId) async {
+    final key = _getMyPostKey(userEmail, postId);
+    await _myPostsBox.delete(key);
+  }
+}

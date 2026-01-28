@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_assignment/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+class MainScreen extends ConsumerWidget {
+  final StatefulNavigationShell navigationShell;
+
+  const MainScreen({required this.navigationShell, super.key});
+
+  void _onTap(BuildContext context, int index) {
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(navigationShell.currentIndex == 0 ? '커뮤니티' : '마이페이지'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: '로그아웃',
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('로그아웃'),
+                  content: const Text('로그아웃 하시겠습니까?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('취소'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('확인'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                ref.read(authViewModelProvider.notifier).logout();
+              }
+            },
+          ),
+        ],
+      ),
+      body: navigationShell,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: navigationShell.currentIndex,
+        onTap: (index) => _onTap(context, index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.article), label: '커뮤니티'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
+        ],
+      ),
+    );
+  }
+}
