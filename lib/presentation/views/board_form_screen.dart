@@ -29,6 +29,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
 
   bool get isEditMode => widget.boardId != null;
 
+  // 초기 데이터 로드 (수정 모드일 경우)
   @override
   void initState() {
     super.initState();
@@ -41,6 +42,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     }
   }
 
+  // 리소스 정리
   @override
   void dispose() {
     _titleController.dispose();
@@ -48,6 +50,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     super.dispose();
   }
 
+  // 갤러리에서 이미지 선택
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -72,6 +75,7 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
     }
   }
 
+  // 게시글 작성/수정 제출
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -88,12 +92,12 @@ class _BoardFormScreenState extends ConsumerState<BoardFormScreen> {
         );
   }
 
+  // 게시글 작성/수정 화면 UI 구성
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(boardFormViewModelProvider);
     final categories = ref.watch(boardListViewModelProvider).categories;
 
-    // 성공/실패 상태 감지
     ref.listen<BoardFormState>(
       boardFormViewModelProvider,
       (previous, next) {

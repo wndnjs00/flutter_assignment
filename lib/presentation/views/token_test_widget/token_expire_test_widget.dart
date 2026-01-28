@@ -50,7 +50,7 @@ class TokenExpireTestWidget extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              /// AccessToken 만료
+              // AccessToken 만료
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () async {
@@ -79,7 +79,7 @@ class TokenExpireTestWidget extends StatelessWidget {
               ),
               const SizedBox(width: 8),
 
-              /// RefreshToken 만료
+              // RefreshToken 만료
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () async {

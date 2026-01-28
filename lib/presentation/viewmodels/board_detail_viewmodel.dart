@@ -29,6 +29,7 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     loadBoard();
   }
 
+  // 게시글 상세 조회
   Future<void> loadBoard() async {
     state = state.copyWith(isLoading: true, error: null);
 
@@ -40,13 +41,13 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     }
   }
 
+  // 게시글 삭제
   Future<void> deleteBoard() async {
     state = state.copyWith(isDeleting: true, error: null, deleteSuccess: false);
 
     try {
       await _boardRepository.deleteBoard(boardId);
       
-      // 삭제 성공 후 관련 상태 업데이트
       await _ref.read(myPostsViewModelProvider.notifier).removeMyPost(boardId);
       _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
       
@@ -56,15 +57,17 @@ class BoardDetailViewModel extends StateNotifier<BoardDetailState> {
     }
   }
 
-  // 게시글 정보 업데이트
+  // 게시글 상태 업데이트
   void updateBoard(Board board) {
     state = state.copyWith(board: board);
   }
 
+  // 에러 상태 초기화
   void clearError() {
     state = state.copyWith(error: null);
   }
 
+  // 삭제 성공 상태 초기화
   void clearDeleteSuccess() {
     state = state.copyWith(deleteSuccess: false);
   }

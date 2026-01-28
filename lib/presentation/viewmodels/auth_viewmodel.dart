@@ -27,6 +27,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
     _checkAuth();
   }
 
+  // 현재 인증 상태 확인
   Future<void> _checkAuth() async {
     try {
       final user = await _repository.getCurrentUser();
@@ -36,17 +37,18 @@ class AuthViewModel extends StateNotifier<AuthState> {
     }
   }
 
+  // 사용자 정보 설정
   void setUser(User user) {
     state = AuthState(user: user);
   }
 
-  // 사용자가 직접 로그아웃
+  // 로그아웃
   Future<void> logout() async {
     await _repository.logout();
     state = const AuthState();
   }
 
-  // 토큰 만료 / refresh 실패 시 강제 로그아웃
+  // 강제 로그아웃
   void forceLogout() {
     state = const AuthState();
   }

@@ -33,6 +33,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
 
   BoardFormViewModel(this._boardRepository, this._ref) : super(BoardFormState());
 
+  // 초기 데이터 로드
   Future<void> loadInitialData({required int boardId}) async {
     state = state.copyWith(isLoadingInitialData: true, error: null);
     try {
@@ -49,6 +50,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
     }
   }
 
+  // 게시글 작성/수정 제출 처리
   Future<bool> submit({
     required bool isEditMode,
     int? boardId,
@@ -94,6 +96,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
     );
   }
 
+  // 게시글 작성
   Future<bool> createBoard({
     required String userEmail,
     required String title,
@@ -118,9 +121,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
         image: image,
       );
 
-      // 내가 작성한 게시글 상태 업데이트
       await _ref.read(myPostsViewModelProvider.notifier).addMyPost(boardId);
-      // 목록 즉시 갱신
       _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
       state = state.copyWith(
@@ -140,6 +141,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
     }
   }
 
+  // 게시글 수정
   Future<bool> updateBoard({
     required int id,
     required String title,
@@ -165,10 +167,8 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
         image: image,
       );
 
-      // 수정된 상세 데이터를 즉시 반영
       final updatedBoard = await _boardRepository.getDetailBoard(id);
       _ref.read(boardDetailViewModelProvider(id).notifier).updateBoard(updatedBoard);
-      // 목록 즉시 갱신
       _ref.read(boardListViewModelProvider.notifier).loadBoards(refresh: true);
 
       state = state.copyWith(
@@ -188,6 +188,7 @@ class BoardFormViewModel extends StateNotifier<BoardFormState> {
     }
   }
 
+  // 메시지 상태 초기화
   void clearMessages() {
     state = state.copyWith(
       error: null,

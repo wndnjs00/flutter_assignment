@@ -18,12 +18,12 @@ class BoardDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
+  // 게시글 상세 화면 UI 구성
   @override
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardDetailViewModelProvider(widget.boardId));
     final isMyPost = ref.watch(isMyPostSelectorProvider(widget.boardId));
 
-    // 삭제 성공/실패 감지
     ref.listen<BoardDetailState>(
       boardDetailViewModelProvider(widget.boardId),
       (previous, next) {
@@ -231,7 +231,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ),
             const SizedBox(height: 12),
 
-            // 내용
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(20),
@@ -316,6 +315,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
+  // 삭제 확인 다이얼로그 표시
   void _showDeleteDialog(BuildContext context) {
     showDialog<bool>(
       context: context,

@@ -17,6 +17,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
+  // 초기화 및 데이터 새로고침
   @override
   void initState() {
     super.initState();
@@ -28,6 +29,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
     });
   }
 
+  // 리소스 정리
   @override
   void dispose() {
     _scrollController.dispose();
@@ -35,6 +37,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
     super.dispose();
   }
 
+  // 스크롤 감지하여 추가 게시글 로드
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
@@ -42,12 +45,14 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
     }
   }
 
+  // 게시글 목록 새로고침
   Future<void> _refresh() async {
     await ref
         .refresh(boardListViewModelProvider.notifier)
         .loadBoards(refresh: true);
   }
 
+  // 게시글 목록 화면 UI 구성
   @override
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardListViewModelProvider);
@@ -217,7 +222,6 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // 카테고리
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 10,
@@ -239,7 +243,6 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                                   ),
                                   const SizedBox(height: 8),
 
-                                  // 날짜
                                   Row(
                                     children: [
                                       Icon(Icons.access_time, size: 12, color: Colors.grey.shade400),
@@ -255,7 +258,6 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
                                   ),
                                   const SizedBox(height: 8),
 
-                                  // 제목
                                   Text(
                                     board.title,
                                     style: const TextStyle(
@@ -295,6 +297,7 @@ class _BoardListScreenState extends ConsumerState<BoardListScreen> {
     );
   }
 
+  // 카테고리 필터 칩 위젯 생성
   Widget _buildCategoryChip(String value, String label) {
     final isSelected = ref.watch(boardCategoryFilterProvider) == value;
     return FilterChip(
