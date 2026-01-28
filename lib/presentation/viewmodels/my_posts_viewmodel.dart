@@ -21,7 +21,6 @@ class MyPostsViewModel extends StateNotifier<MyPostsState> {
     _loadMyPosts();
     
     _ref.listen<AuthState>(authViewModelProvider, (previous, next) {
-      // 로그인/로그아웃 상태 새로고침
       if (previous?.user?.email != next.user?.email) {
         _loadMyPosts();
       }
@@ -67,11 +66,6 @@ class MyPostsViewModel extends StateNotifier<MyPostsState> {
     currentMyPostIds.remove(postId);
 
     state = MyPostsState(myPostIds: currentMyPostIds);
-  }
-
-  // TODO: 사용되지 않음 -> 삭제 가능?
-  bool isMyPost(int postId) {
-    return state.myPostIds.contains(postId);
   }
 
   void refresh() {

@@ -77,14 +77,6 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-  /* 사용안함 (getCurrentUser()로 쓰고있음) -> 혹시몰라 확장용으로 만들어둔 함수*/
-  /* TODO: 삭제할것 */
-  @override
-  Future<bool> isLoggedIn() async {
-    final accessToken = await _storage.read(key: ApiConstants.accessTokenKey);
-    return accessToken != null;
-  }
-
   Future<void> _saveTokens(String accessToken, String refreshToken) async {
     await _storage.write(key: ApiConstants.accessTokenKey, value: accessToken);
     await _storage.write(

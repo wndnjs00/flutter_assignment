@@ -21,7 +21,6 @@ class LikeViewModel extends StateNotifier<LikeState> {
     _loadLikedPosts();
     
     _ref.listen<AuthState>(authViewModelProvider, (previous, next) {
-      // 로그인/로그아웃 상태 새로고침
       if (previous?.user?.email != next.user?.email) {
         _loadLikedPosts();
       }
@@ -49,7 +48,6 @@ class LikeViewModel extends StateNotifier<LikeState> {
 
     await _localStorage.toggleLike(userEmail, postId);
 
-    // 상태 업데이트
     final currentLikedIds = Set<int>.from(state.likedPostIds);
     if (currentLikedIds.contains(postId)) {
       currentLikedIds.remove(postId);
@@ -58,11 +56,6 @@ class LikeViewModel extends StateNotifier<LikeState> {
     }
 
     state = LikeState(likedPostIds: currentLikedIds);
-  }
-
-  // TODO: 사용되지 않음 -> 삭제 가능?
-  bool isLiked(int postId) {
-    return state.likedPostIds.contains(postId);
   }
 
   void refresh() {

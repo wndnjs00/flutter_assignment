@@ -85,11 +85,6 @@ class BoardListViewModel extends StateNotifier<BoardListState> {
       state = state.copyWith(categories: categories);
     } catch (e) {}
   }
-
-  // TODO: 사용되지 않음 -> 삭제 가능?
-  void clearError() {
-    state = state.copyWith(error: null);
-  }
 }
 
 final boardListViewModelProvider =
